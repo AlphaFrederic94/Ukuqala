@@ -1,0 +1,69 @@
+{
+  "common": {
+    "appName": "CareAiX",
+    "home": "Home",
+    "predictions": "Predictions",
+    "appointments": "Appointments",
+    "nutrition": "Nutrition",
+    "healthTips": "Health Tips",
+    "analytics": "Analytics",
+    "profile": "Profile",
+    "settings": "Settings",
+    "darkMode": "Dark Mode",
+    "lightMode": "Light Mode",
+    "update": "Update",
+    "change": "Change",
+    "readMore": "Read More"
+  },
+  "nutrition": {
+    "dashboard": "Dashboard",
+    "meals": "Meal Tracking",
+    "hydration": "Hydration",
+    "plan": "Nutrition Plan",
+    "history": "Meal History"
+  },
+  "settings": {
+    "account": "Account Settings",
+    "email": "Email Address",
+    "changeEmail": "Change your email address",
+    "password": "Password",
+    "changePassword": "Change your password",
+    "notifications": "Notifications",
+    "emailNotifications": "Email Notifications",
+    "receiveEmails": "Receive email updates",
+    "appointmentReminders": "Appointment Reminders",
+    "reminderDesc": "Get notified about upcoming appointments",
+    "preferences": "Preferences",
+    "language": "Language",
+    "languageDesc": "Choose your preferred language",
+    "timezone": "Time Zone",
+    "timezoneDesc": "Set your local time zone"
+  },
+  "healthTips": {
+    "title": "Health Tips & Resources",
+    "categories": {
+      "all": "All Tips",
+      "mental": "Mental Health",
+      "diet": "Diet",
+      "exercise": "Exercise",
+      "lifestyle": "Lifestyle",
+      "sleep": "Sleep"
+    },
+    "programs": {
+      "exercise": {
+        "title": "Exercise Programs",
+        "bodyTypes": {
+          "ectomorph": "Ectomorph",
+          "mesomorph": "Mesomorph",
+          "endomorph": "Endomorph"
+        }
+      }
+    }
+  },
+  "chatbot": {
+    "title": "Medical Assistant",
+    "placeholder": "Type your health question...",
+    "greeting": "Hello! I'm your medical assistant. How can I help you today?",
+    "disclaimer": "Note: This is for general information only and not a substitute for professional medical advice."
+  }
+}

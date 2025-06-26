@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CareAI Social Features Setup</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1, h2, h3 {
+      color: #2563eb;
+    }
+    pre {
+      background-color: #f5f5f5;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    .container {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin-top: 20px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .step {
+      margin-bottom: 20px;
+      padding-left: 20px;
+      border-left: 3px solid #2563eb;
+    }
+    .button {
+      display: inline-block;
+      background-color: #2563eb;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      text-decoration: none;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+    .button:hover {
+      background-color: #1d4ed8;
+    }
+    .status {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 5px;
+    }
+    .status.success {
+      background-color: #d1fae5;
+      border: 1px solid #10b981;
+    }
+    .status.error {
+      background-color: #fee2e2;
+      border: 1px solid #ef4444;
+    }
+    .status.warning {
+      background-color: #fef3c7;
+      border: 1px solid #f59e0b;
+    }
+    .check-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+    .check-item .icon {
+      margin-right: 10px;
+    }
+    .success-icon {
+      color: #10b981;
+    }
+    .error-icon {
+      color: #ef4444;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>CareAI Social Features Setup</h1>
+      <p>Follow these instructions to set up the social features in your CareAI application.</p>
+    </div>
+
+    <div class="status warning">
+      <h3>⚠️ Setup Required</h3>
+      <p>The social features in your CareAI application are not fully set up. Follow the instructions below to set them up.</p>
+      <div id="setup-status">
+        <p>Checking setup status...</p>
+      </div>
+    </div>
+
+    <h2>Setup Instructions</h2>
+    
+    <div class="step">
+      <h3>Step 1: Log in to your Supabase dashboard</h3>
+      <p>Open your Supabase dashboard and log in with your credentials.</p>
+      <a href="https://app.supabase.com" target="_blank" class="button">Open Supabase Dashboard</a>
+    </div>
+    
+    <div class="step">
+      <h3>Step 2: Go to the SQL Editor</h3>
+      <p>In the Supabase dashboard, navigate to the SQL Editor section.</p>
+    </div>
+    
+    <div class="step">
+      <h3>Step 3: Create a new query</h3>
+      <p>Click on the "New Query" button to create a new SQL query.</p>
+    </div>
+    
+    <div class="step">
+      <h3>Step 4: Copy and paste the SQL script</h3>
+      <p>Copy the following SQL script and paste it into the query editor:</p>
+      <pre id="sql-script">Loading SQL script...</pre>
+    </div>
+    
+    <div class="step">
+      <h3>Step 5: Run the query</h3>
+      <p>Click on the "Run" button to execute the SQL script. This will create all necessary tables, indexes, triggers, and policies for the social features.</p>
+    </div>
+    
+    <div class="step">
+      <h3>Step 6: Restart your application</h3>
+      <p>After running the script, restart your CareAI application to apply the changes.</p>
+    </div>
+
+    <div class="status warning">
+      <h3>Note</h3>
+      <p>After running the script, you can check if the social features are properly set up by refreshing this page or by checking the social features in the CareAI application.</p>
+      <button id="check-setup" class="button">Check Setup Status</button>
+    </div>
+  </div>
+
+  <script>
+    // Fetch the SQL script
+    fetch('/fix_social_features.sql')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('sql-script').textContent = data;
+      })
+      .catch(error => {
+        document.getElementById('sql-script').textContent = 'Error loading SQL script: ' + error.message;
+      });
+
+    // Check setup status
+    async function checkSetup() {
+      try {
+        const response = await fetch('/api/check-social-features');
+        const data = await response.json();
+        
+        const statusDiv = document.getElementById('setup-status');
+        
+        if (data.isFullySetup) {
+          statusDiv.innerHTML = `
+            <div class="status success">
+              <h3>✅ Social features are properly set up!</h3>
+              <p>You can now use the social features in the CareAI application.</p>
+            </div>
+          `;
+        } else {
+          let tableStatus = '';
+          for (const [table, exists] of Object.entries(data.tableStatus || {})) {
+            tableStatus += `
+              <div class="check-item">
+                <span class="icon ${exists ? 'success-icon' : 'error-icon'}">${exists ? '✅' : '❌'}</span>
+                <span>${table}</span>
+              </div>
+            `;
+          }
+          
+          statusDiv.innerHTML = `
+            <h4>Current Status:</h4>
+            <div class="check-item">
+              <span class="icon ${data.storageBucketExists ? 'success-icon' : 'error-icon'}">${data.storageBucketExists ? '✅' : '❌'}</span>
+              <span>Storage bucket</span>
+            </div>
+            <div class="check-item">
+              <span class="icon ${data.storedProceduresExist ? 'success-icon' : 'error-icon'}">${data.storedProceduresExist ? '✅' : '❌'}</span>
+              <span>Stored procedures</span>
+            </div>
+            <h4>Tables:</h4>
+            ${tableStatus}
+          `;
+        }
+      } catch (error) {
+        document.getElementById('setup-status').innerHTML = `
+          <div class="status error">
+            <h3>❌ Error checking setup status</h3>
+            <p>${error.message}</p>
+          </div>
+        `;
+      }
+    }
+
+    // Check setup on page load
+    checkSetup();
+
+    // Add event listener to check setup button
+    document.getElementById('check-setup').addEventListener('click', checkSetup);
+  </script>
+</body>
+</html>

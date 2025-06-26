@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareAI Icon Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            margin: 10px 0;
+        }
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+        }
+        .icon-container {
+            text-align: center;
+        }
+        button {
+            background-color: #3B82F6;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        button:hover {
+            background-color: #2563EB;
+        }
+    </style>
+</head>
+<body>
+    <h1>CareAI Icon Generator</h1>
+    <p>This tool generates PNG icons from the SVG icon for the CareAI app.</p>
+    
+    <div>
+        <h2>Source SVG</h2>
+        <div id="svg-container"></div>
+    </div>
+    
+    <h2>Generated Icons</h2>
+    <button id="generate-btn">Generate All Icons</button>
+    <div class="icon-grid" id="icon-grid"></div>
+    
+    <script>
+        // SVG source code
+        const svgSource = `<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="128" fill="#3B82F6"/>
+  <path d="M256 128C185.307 128 128 185.307 128 256C128 326.693 185.307 384 256 384C326.693 384 384 326.693 384 256C384 185.307 326.693 128 256 128ZM256 352C203.065 352 160 308.935 160 256C160 203.065 203.065 160 256 160C308.935 160 352 203.065 352 256C352 308.935 308.935 352 256 352Z" fill="white"/>
+  <path d="M256 192C238.327 192 224 206.327 224 224C224 241.673 238.327 256 256 256C273.673 256 288 241.673 288 224C288 206.327 273.673 192 256 192Z" fill="white"/>
+  <path d="M304 288H208C199.163 288 192 295.163 192 304C192 312.837 199.163 320 208 320H304C312.837 320 320 312.837 320 304C320 295.163 312.837 288 304 288Z" fill="white"/>
+  <path d="M368 224H336C327.163 224 320 231.163 320 240C320 248.837 327.163 256 336 256H368C376.837 256 384 248.837 384 240C384 231.163 376.837 224 368 224Z" fill="white"/>
+  <path d="M176 224H144C135.163 224 128 231.163 128 240C128 248.837 135.163 256 144 256H176C184.837 256 192 248.837 192 240C192 231.163 184.837 224 176 224Z" fill="white"/>
+  <path d="M256 96C264.837 96 272 88.837 272 80V48C272 39.163 264.837 32 256 32C247.163 32 240 39.163 240 48V80C240 88.837 247.163 96 256 96Z" fill="white"/>
+  <path d="M256 416C247.163 416 240 423.163 240 432V464C240 472.837 247.163 480 256 480C264.837 480 272 472.837 272 464V432C272 423.163 264.837 416 256 416Z" fill="white"/>
+</svg>`;
+        
+        // Display the SVG
+        document.getElementById('svg-container').innerHTML = svgSource;
+        
+        // Icon sizes
+        const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+        
+        // Generate the icon grid
+        const iconGrid = document.getElementById('icon-grid');
+        sizes.forEach(size => {
+            const container = document.createElement('div');
+            container.className = 'icon-container';
+            
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            canvas.id = `canvas-${size}`;
+            
+            const label = document.createElement('div');
+            label.textContent = `${size}x${size}`;
+            
+            const downloadBtn = document.createElement('button');
+            downloadBtn.textContent = 'Download';
+            downloadBtn.onclick = () => downloadIcon(size);
+            
+            container.appendChild(canvas);
+            container.appendChild(label);
+            container.appendChild(downloadBtn);
+            
+            iconGrid.appendChild(container);
+        });
+        
+        // Generate all icons
+        document.getElementById('generate-btn').addEventListener('click', () => {
+            sizes.forEach(size => generateIcon(size));
+        });
+        
+        // Generate a single icon
+        function generateIcon(size) {
+            const canvas = document.getElementById(`canvas-${size}`);
+            const ctx = canvas.getContext('2d');
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, size, size);
+            
+            // Create a new image from SVG
+            const img = new Image();
+            img.onload = function() {
+                ctx.drawImage(img, 0, 0, size, size);
+            };
+            
+            // Convert SVG to data URL
+            const svgBlob = new Blob([svgSource], {type: 'image/svg+xml'});
+            const url = URL.createObjectURL(svgBlob);
+            img.src = url;
+        }
+        
+        // Download an icon
+        function downloadIcon(size) {
+            const canvas = document.getElementById(`canvas-${size}`);
+            const link = document.createElement('a');
+            link.download = `icon-${size}x${size}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+    </script>
+</body>
+</html>

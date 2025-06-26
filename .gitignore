@@ -1,0 +1,84 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependencies
+node_modules
+dist
+dist-ssr
+*.local
+
+# Virtual environments
+venv/
+env/
+.venv/
+*/venv/
+*/env/
+*/.venv/
+**/venv/
+**/env/
+**/.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Backend folders (separate repositories)
+backend/
+Models backend/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+
+# Supabase
+.supabase/
+
+# Service account keys
+serviceAccountKey.json
+
+# Test files and reports
+symptom_prediction_comparison_test.py
+symptom_prediction_comparison_report_*.json
+SYMPTOM_PREDICTION_COMPARISON_REPORT.md
+
+# Large files and directories
+*.safetensors
+*.h5
+*.weights.h5
+*.model
+*.bin
+*.onnx
+*.pkl
+*.joblib
+
+# Data files
+*.csv
+!package.json
+!tsconfig.json
+!firebase.json
+!firestore.rules
+!storage.rules

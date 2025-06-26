@@ -1,0 +1,2794 @@
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../contexts/AuthContext';
+import { useFirebase } from '../../contexts/FirebaseContext';
+import firebase from '../../firebase-compat';
+import { RefreshCw, Filter, TrendingUp, Users, MessageCircle, Loader2, PlusCircle, Heart, X, Image, Send, Newspaper, Bell, UserPlus, TestTube } from 'lucide-react';
+import HealthNewsWidget from '../../components/social/HealthNewsWidget';
+import { motion, AnimatePresence } from 'framer-motion';
+import { supabase } from '../../lib/supabaseClient';
+import { socialService } from '../../lib/socialService';
+import { channelService } from '../../lib/channelService';
+import { ensureNotificationsTable } from '../../lib/checkSocialFeatures';
+
+import FirebaseSocialFeed from '../../components/social/FirebaseSocialFeed';
+import { Link } from 'react-router-dom';
+import '../../styles/socialFeed.css';
+import '../../styles/healthNewsWidget.css';
+import TimeAgo from 'react-timeago';
+import ChannelList from '../../components/social/ChannelList';
+import JoinedChannelsList from '../../components/social/JoinedChannelsList';
+import TrendingTopics from '../../components/social/TrendingTopics';
+import PeopleYouMayKnow from '../../components/social/PeopleYouMayKnow';
+import SocialAd from '../../components/social/SocialAd';
+import HashtagHighlighter from '../../components/social/HashtagHighlighter';
+import HashtagInput from '../../components/social/HashtagInput';
+
+const SocialFeedPage: React.FC = () => {
+  const { t } = useTranslation();
+  const { user } = useAuth();
+  const { socialService } = useFirebase();
+  const navigate = useNavigate();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const postOptionsRef = useRef<HTMLDivElement>(null);
+  const notificationsRef = useRef<HTMLDivElement>(null);
+
+  // State for posts and UI
+  const [isLoading, setIsLoading] = useState(false);
+  const [posts, setPosts] = useState<any[]>([]);
+  const [hasMorePosts, setHasMorePosts] = useState(true);
+  const [currentPage, setCurrentPage] = useState(0);
+  const postsPerPage = 5;
+  const [friendSuggestions, setFriendSuggestions] = useState<any[]>([]);
+  const [sortBy, setSortBy] = useState('recent');
+
+  // State for creating posts
+  const [showPostModal, setShowPostModal] = useState(false);
+  const [showConfirmationDialog, setShowConfirmationDialog] = useState(false);
+  const [confirmationMessage, setConfirmationMessage] = useState('');
+  const [newPostContent, setNewPostContent] = useState('');
+  const [newPostImage, setNewPostImage] = useState<File | null>(null);
+  const [newPostImagePreview, setNewPostImagePreview] = useState<string | null>(null);
+  const [isSubmittingPost, setIsSubmittingPost] = useState(false);
+  const [editingPost, setEditingPost] = useState<any | null>(null);
+  const [showPostOptions, setShowPostOptions] = useState<string | null>(null);
+  const [postHashtags, setPostHashtags] = useState<string[]>([]);
+  const [isAnonymous, setIsAnonymous] = useState(false);
+
+  // State for channels
+  const [channels, setChannels] = useState<any[]>([]);
+  const [isLoadingChannels, setIsLoadingChannels] = useState(false);
+
+  // State for ads
+  const [socialAds, setSocialAds] = useState<any[]>([]);
+
+  // State for comments
+  const [activeCommentPostId, setActiveCommentPostId] = useState<string | null>(null);
+  const [commentText, setCommentText] = useState('');
+  const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+  const [postComments, setPostComments] = useState<Record<string, any[]>>({});
+  const [isLoadingComments, setIsLoadingComments] = useState(false);
+  const [replyToComment, setReplyToComment] = useState<{commentId: string, userName: string} | null>(null);
+
+  // State for notifications
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
+
+  // State for trending topics
+  const [trendingTopics, setTrendingTopics] = useState<{id: number, name: string, count: number}[]>([]);
+
+  // State for removing test posts
+  const [isRemovingTestPosts, setIsRemovingTestPosts] = useState(false);
+  const [isCreatingTestPost, setIsCreatingTestPost] = useState(false);
+
+  // Fetch trending topics from Firebase
+  const fetchTrendingTopics = useCallback(async () => {
+    try {
+      console.log('Fetching trending topics from Firebase');
+      const topics = await socialService.getTrendingHashtags(5);
+      console.log('Trending topics from Firebase:', topics);
+
+      // Format topics for display
+      const formattedTopics = topics.map(topic => ({
+        id: topic.id,
+        name: topic.name,
+        count: topic.count
+      }));
+
+      setTrendingTopics(formattedTopics);
+    } catch (error) {
+      console.error('Error fetching trending topics:', error);
+
+      // Fallback to default topics
+      const defaultTopics = [
+        { id: 101, name: 'HealthyLiving', count: 128 },
+        { id: 102, name: 'MentalHealth', count: 96 },
+        { id: 103, name: 'Nutrition', count: 87 },
+        { id: 104, name: 'Fitness', count: 76 },
+        { id: 105, name: 'Wellness', count: 65 }
+      ];
+
+      setTrendingTopics(defaultTopics);
+    }
+  }, [socialService]);
+
+  // State for UI is defined above
+
+  // Handle click outside to close post options menu and notifications
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // Close post options if clicked outside
+      if (postOptionsRef.current && !postOptionsRef.current.contains(event.target as Node)) {
+        setShowPostOptions(null);
+      }
+
+      // Close notifications if clicked outside
+      if (notificationsRef.current && !notificationsRef.current.contains(event.target as Node) &&
+          !(event.target as Element).closest('[data-notifications-toggle]')) {
+        setShowNotifications(false);
+      }
+    };
+
+    // Handle escape key to close modals
+    const handleEscKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setShowPostOptions(null);
+        setShowNotifications(false);
+        if (!showPostModal && !showConfirmationDialog) {
+          setActiveCommentPostId(null);
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscKey);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscKey);
+    };
+  }, [showPostModal, showConfirmationDialog]);
+
+  // Fetch notifications from Firebase
+  const fetchNotifications = async () => {
+    if (!user) return;
+
+    try {
+      console.log('Fetching notifications from Firebase');
+
+      // Use the service function that handles index errors
+      const notificationsData = await socialService.getNotifications(user.id, 20);
+      console.log('Notifications from Firebase:', notificationsData);
+
+      if (notificationsData && notificationsData.length > 0) {
+        // Format notifications for display
+        const formattedNotifications = notificationsData.map(notification => ({
+          id: notification.id,
+          user_id: notification.userId,
+          type: notification.type,
+          title: notification.title,
+          message: notification.message,
+          link: notification.link,
+          read: notification.read,
+          created_at: notification.createdAt instanceof firebase.firestore.Timestamp ?
+            notification.createdAt.toDate() :
+            (typeof notification.createdAt === 'string' ? new Date(notification.createdAt) : new Date())
+        }));
+
+        setNotifications(formattedNotifications);
+
+        // Count unread notifications
+        const unreadCount = formattedNotifications.filter(notification => !notification.read).length;
+        setUnreadNotificationsCount(unreadCount);
+      } else {
+        // Try Supabase as fallback
+        try {
+          const { data: supabaseNotifications, error } = await supabase
+            .from('notifications')
+            .select('*')
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: false })
+            .limit(20);
+
+          if (error) {
+            console.error('Error fetching notifications from Supabase:', error);
+            // Set empty notifications to prevent UI errors
+            setNotifications([]);
+            setUnreadNotificationsCount(0);
+            return;
+          }
+
+          if (supabaseNotifications && supabaseNotifications.length > 0) {
+            setNotifications(supabaseNotifications);
+
+            // Count unread notifications
+            const unreadCount = supabaseNotifications.filter(notification => !notification.read).length;
+            setUnreadNotificationsCount(unreadCount);
+          } else {
+            // No notifications found in either Firebase or Supabase
+            setNotifications([]);
+            setUnreadNotificationsCount(0);
+          }
+        } catch (supabaseError) {
+          console.error('Error in Supabase fetchNotifications:', supabaseError);
+          // Set empty notifications to prevent UI errors
+          setNotifications([]);
+          setUnreadNotificationsCount(0);
+        }
+      }
+    } catch (error) {
+      console.error('Error in fetchNotifications:', error);
+      // Set empty notifications to prevent UI errors
+      setNotifications([]);
+      setUnreadNotificationsCount(0);
+    }
+  };
+
+  // Mark notification as read
+  const markNotificationAsRead = async (notificationId: string) => {
+    if (!user) return;
+
+    try {
+      console.log('Marking notification as read in Firebase:', notificationId);
+
+      // Try Firebase first
+      try {
+        await socialService.markNotificationAsRead(notificationId);
+        console.log('Notification marked as read in Firebase');
+      } catch (firebaseError) {
+        console.error('Error marking notification as read in Firebase:', firebaseError);
+
+        // Fallback to Supabase
+        const { error } = await supabase
+          .from('notifications')
+          .update({ read: true })
+          .eq('id', notificationId)
+          .eq('user_id', user.id);
+
+        if (error) {
+          console.error('Error marking notification as read in Supabase:', error);
+          return;
+        }
+      }
+
+      // Update local state
+      setNotifications(prev =>
+        prev.map(notification =>
+          notification.id === notificationId ? { ...notification, read: true } : notification
+        )
+      );
+
+      // Update unread count
+      setUnreadNotificationsCount(prev => Math.max(0, prev - 1));
+
+      // If notification has a link, navigate to it
+      const notification = notifications.find(n => n.id === notificationId);
+      if (notification?.link) {
+        // Close notifications dropdown
+        setShowNotifications(false);
+        // Navigate to the link
+        navigate(notification.link);
+      }
+    } catch (error) {
+      console.error('Error in markNotificationAsRead:', error);
+    }
+  };
+
+  // Fetch posts from Supabase
+  const fetchPosts = async (currentPage = 0, append = false) => {
+    if (!user) return;
+
+    try {
+      console.log('Fetching posts from database, page:', currentPage);
+      const from = currentPage * postsPerPage;
+      const to = from + postsPerPage - 1;
+
+      // Add sort options
+      let query = supabase
+        .from('social_posts')
+        .select('*');
+
+      // Apply sorting
+      if (sortBy === 'recent') {
+        query = query.order('created_at', { ascending: false });
+      } else if (sortBy === 'trending') {
+        // For trending, we'd ideally have a more complex algorithm
+        // For now, sort by a combination of likes and comments
+        query = query.order('likes_count', { ascending: false });
+      } else if (sortBy === 'top') {
+        query = query.order('likes_count', { ascending: false });
+      }
+
+      // Apply pagination
+      query = query.range(from, to);
+
+      const { data: postsData, error: postsError } = await query;
+
+      if (postsError) {
+        console.error('Error fetching posts:', postsError);
+        return;
+      }
+
+      console.log('Posts data received:', postsData?.length || 0, 'posts', postsData);
+
+      // Optimize by fetching all related data in batch
+      if (!postsData || postsData.length === 0) {
+        setPosts(currentPage === 0 ? [] : posts); // Keep existing posts if loading more
+        setHasMorePosts(false);
+        return;
+      }
+
+      // Extract all post IDs and user IDs
+      const postIds = postsData.map(post => post.id);
+      const userIds = [...new Set(postsData.map(post => post.user_id))];
+
+      // Fetch all likes counts in one query
+      const { data: likesData, error: likesError } = await supabase
+        .from('post_likes')
+        .select('post_id, id')
+        .in('post_id', postIds);
+
+      if (likesError) {
+        console.error('Error fetching likes:', likesError);
+      }
+
+      // Fetch all comments counts in one query
+      const { data: commentsData, error: commentsError } = await supabase
+        .from('post_comments')
+        .select('post_id, id')
+        .in('post_id', postIds);
+
+      if (commentsError) {
+        console.error('Error fetching comments:', commentsError);
+      }
+
+      // Fetch all user likes in one query
+      const { data: userLikesData, error: userLikesError } = await supabase
+        .from('post_likes')
+        .select('post_id')
+        .in('post_id', postIds)
+        .eq('user_id', user.id);
+
+      if (userLikesError) {
+        console.error('Error fetching user likes:', userLikesError);
+      }
+
+      // Fetch all user profiles in one query
+      const { data: userProfilesData, error: userProfilesError } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url')
+        .in('id', userIds);
+
+      if (userProfilesError) {
+        console.error('Error fetching user profiles:', userProfilesError);
+      }
+
+      // Create lookup maps for efficient access
+      const likesCountMap = {};
+      likesData?.forEach(like => {
+        likesCountMap[like.post_id] = (likesCountMap[like.post_id] || 0) + 1;
+      });
+
+      const commentsCountMap = {};
+      commentsData?.forEach(comment => {
+        commentsCountMap[comment.post_id] = (commentsCountMap[comment.post_id] || 0) + 1;
+      });
+
+      const userLikesMap = {};
+      userLikesData?.forEach(like => {
+        userLikesMap[like.post_id] = true;
+      });
+
+      const userProfilesMap = {};
+      userProfilesData?.forEach(profile => {
+        userProfilesMap[profile.id] = profile;
+      });
+
+      // Process posts with all the data
+      const postsWithLikeStatus = postsData.map(post => {
+        // Get user data or create fallback
+        const userData = userProfilesMap[post.user_id] || {
+          id: post.user_id,
+          full_name: post.user_id.substring(0, 8) + '...',
+          avatar_url: `https://ui-avatars.com/api/?name=${post.user_id.substring(0, 2)}&background=random`
+        };
+
+        return {
+          ...post,
+          user: userData,
+          likes_count: likesCountMap[post.id] || 0,
+          comments_count: commentsCountMap[post.id] || 0,
+          liked_by_user: !!userLikesMap[post.id]
+        };
+      });
+
+      // Update posts based on pagination
+      if (currentPage === 0 || !append) {
+        // First page, replace all posts
+        setPosts(postsWithLikeStatus);
+      } else {
+        // Subsequent pages, append to existing posts
+        setPosts(prevPosts => [...prevPosts, ...postsWithLikeStatus]);
+      }
+
+      // Check if we have more posts to load
+      setHasMorePosts(postsWithLikeStatus.length === postsPerPage);
+
+      // Update trending topics based on all posts
+      if (currentPage === 0 || !append) {
+        updateTrendingTopics(postsWithLikeStatus);
+      } else {
+        // For subsequent pages, update trending topics with all posts
+        setPosts(prevPosts => {
+          const allPosts = [...prevPosts, ...postsWithLikeStatus];
+          updateTrendingTopics(allPosts);
+          return allPosts;
+        });
+      }
+
+      return postsWithLikeStatus;
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+    }
+  };
+
+  // Fetch channels
+  const fetchChannels = async () => {
+    if (!user) return;
+
+    setIsLoadingChannels(true);
+    try {
+      const channelsData = await channelService.getChannels();
+      setChannels(channelsData);
+    } catch (error) {
+      console.error('Error fetching channels:', error);
+    } finally {
+      setIsLoadingChannels(false);
+    }
+  };
+
+  // Fetch social ads
+  const fetchSocialAds = async () => {
+    if (!user) return;
+
+    try {
+      // Check if social_ads table exists first
+      const { count, error: checkError } = await supabase
+        .from('social_ads')
+        .select('*', { count: 'exact', head: true });
+
+      if (checkError) {
+        console.error('Error checking social_ads table:', checkError);
+        return;
+      }
+
+      // If table exists, fetch ads
+      const { data: adsData, error } = await supabase
+        .from('social_ads')
+        .select('*')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false })
+        .limit(2);
+
+      if (error) {
+        console.error('Error fetching social ads:', error);
+        return;
+      }
+
+      if (adsData && adsData.length > 0) {
+        setSocialAds(adsData);
+      }
+    } catch (error) {
+      console.error('Error in fetchSocialAds:', error);
+    }
+  };
+
+
+
+  // Subscribe to real-time post updates
+  useEffect(() => {
+    if (!user) return;
+
+    console.log('Setting up real-time post updates subscription');
+    const unsubscribe = socialService.subscribeToPostUpdates((updatedPosts) => {
+      console.log('Received real-time post updates:', updatedPosts.length);
+      if (updatedPosts.length > 0) {
+        // Process posts to add user info
+        const processedPosts = updatedPosts.map(post => ({
+          ...post,
+          user: {
+            id: post.userId,
+            full_name: post.userName || `User ${post.userId.substring(0, 4)}`,
+            avatar_url: post.userPhotoURL || `https://ui-avatars.com/api/?name=${post.userId.substring(0, 2)}&background=random`
+          },
+          likes_count: post.likes || 0,
+          comments_count: post.comments || 0,
+          liked_by_user: false // We'll need to check this separately
+        }));
+        setPosts(processedPosts);
+      }
+    });
+
+    return () => {
+      console.log('Cleaning up real-time post updates subscription');
+      unsubscribe();
+    };
+  }, [user, socialService]);
+
+  // Load data from Supabase and Firebase
+  const loadData = async () => {
+    if (!user) return;
+
+    setIsLoading(true);
+
+    // Ensure notifications table exists
+    await ensureNotificationsTable();
+
+    try {
+      console.log('Loading social feed data for user:', user.id);
+
+      // Initialize Firebase collections
+      await socialService.initializeFirebaseCollections();
+      await socialService.initializeDefaultChatGroups();
+      await socialService.initializeChannelPolicies();
+
+      // Ensure user profile exists
+      await ensureUserProfile();
+
+      // Fetch posts from Supabase with pagination
+      await fetchPosts(0, false);
+
+      // Fetch channels
+      await fetchChannels();
+
+      // Fetch friend suggestions
+      await fetchFriendSuggestions();
+
+      // Fetch trending topics from Firebase
+      await fetchTrendingTopics();
+
+      // Fetch notifications
+      await fetchNotifications();
+
+      // Fetch social ads
+      await fetchSocialAds();
+    } catch (error) {
+      console.error('Error loading social data:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Remove test posts
+  const handleRemoveTestPosts = async () => {
+    if (!user) return;
+
+    try {
+      setIsRemovingTestPosts(true);
+
+      // Call the Firebase service to remove test posts
+      const result = await socialService.removeTestPosts();
+
+      console.log('Remove test posts result:', result);
+
+      if (result.success) {
+        // Show success message
+        setConfirmationMessage(result.message);
+        setShowConfirmationDialog(true);
+
+        // Refresh posts
+        await fetchPosts(0, false);
+      } else {
+        // Show error message
+        setConfirmationMessage(`Failed to remove test posts: ${result.message}`);
+        setShowConfirmationDialog(true);
+      }
+    } catch (error) {
+      console.error('Error removing test posts:', error);
+      setConfirmationMessage('An error occurred while removing test posts');
+      setShowConfirmationDialog(true);
+    } finally {
+      setIsRemovingTestPosts(false);
+    }
+  };
+
+  // Create a test post
+  const handleCreateTestPost = async () => {
+    if (!user) return;
+
+    try {
+      setIsCreatingTestPost(true);
+
+      // Call the Firebase service to create a test post
+      const result = await socialService.createTestPost(user.id);
+
+      console.log('Create test post result:', result);
+
+      if (result.success) {
+        // Show success message
+        setConfirmationMessage(result.message);
+        setShowConfirmationDialog(true);
+
+        // Refresh posts
+        await fetchPosts(0, false);
+      } else {
+        // Show error message
+        setConfirmationMessage(`Failed to create test post: ${result.message}`);
+        setShowConfirmationDialog(true);
+      }
+    } catch (error) {
+      console.error('Error creating test post:', error);
+      setConfirmationMessage('An error occurred while creating a test post');
+      setShowConfirmationDialog(true);
+    } finally {
+      setIsCreatingTestPost(false);
+    }
+  };
+
+  // Mark all notifications as read
+  const markAllNotificationsAsRead = async () => {
+    if (!user || notifications.length === 0) return;
+
+    try {
+      // Get IDs of unread notifications
+      const unreadIds = notifications
+        .filter(notification => !notification.read)
+        .map(notification => notification.id);
+
+      if (unreadIds.length === 0) return;
+
+      console.log('Marking all notifications as read in Firebase');
+
+      // Try Firebase first
+      try {
+        await socialService.markAllNotificationsAsRead(user.id);
+        console.log('All notifications marked as read in Firebase');
+      } catch (firebaseError) {
+        console.error('Error marking all notifications as read in Firebase:', firebaseError);
+
+        // Fallback to Supabase
+        const { error } = await supabase
+          .from('notifications')
+          .update({ read: true })
+          .in('id', unreadIds);
+
+        if (error) {
+          console.error('Error marking notifications as read in Supabase:', error);
+          return;
+        }
+      }
+
+      // Update local state
+      setNotifications(prev =>
+        prev.map(notification => ({
+          ...notification,
+          read: true
+        }))
+      );
+
+      // Reset unread count
+      setUnreadNotificationsCount(0);
+    } catch (error) {
+      console.error('Error marking notifications as read:', error);
+    }
+  };
+
+  // Fetch friend suggestions
+  const fetchFriendSuggestions = async () => {
+    try {
+      console.log('Fetching friend suggestions for user:', user.id);
+
+      // Use Firebase social service to get friend suggestions
+      const suggestions = await socialService.getFriendSuggestions(user.id, 5);
+
+      if (suggestions && suggestions.length > 0) {
+        console.log('Got friend suggestions from Firebase:', suggestions.length);
+
+        // Map Firebase user profiles to the expected format
+        const formattedSuggestions = suggestions.map(suggestion => ({
+          id: suggestion.id,
+          full_name: suggestion.displayName || `User ${suggestion.id.substring(0, 4)}`,
+          avatar_url: suggestion.photoURL || null,
+          email: suggestion.email || null
+        }));
+
+        setFriendSuggestions(formattedSuggestions);
+        return;
+      }
+
+      // If no suggestions from Firebase, try Supabase as fallback
+      try {
+        const supabaseSuggestions = await friendshipService.getFriendSuggestions(user.id, 5);
+        if (supabaseSuggestions && supabaseSuggestions.length > 0) {
+          console.log('Got friend suggestions from Supabase:', supabaseSuggestions.length);
+          setFriendSuggestions(supabaseSuggestions);
+          return;
+        }
+      } catch (friendshipError) {
+        console.error('Error using friendshipService:', friendshipError);
+      }
+
+      // If still no suggestions, get all users from the profiles table
+      const { data: allProfiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url, email')
+        .neq('id', user.id);
+
+      if (profilesError) {
+        console.error('Error fetching profiles:', profilesError);
+        return;
+      }
+
+      console.log('Found profiles:', allProfiles?.length || 0);
+
+      if (allProfiles && allProfiles.length > 0) {
+        // We have profiles, use them as friend suggestions
+        // Make sure full_name is not null or empty
+        const validProfiles = allProfiles.map(profile => ({
+          ...profile,
+          full_name: profile.full_name || `User ${profile.id.substring(0, 4)}`
+        }));
+
+        console.log('Setting friend suggestions from profiles');
+        setFriendSuggestions(validProfiles);
+      }
+    } catch (error) {
+      console.error('Error fetching friend suggestions:', error);
+    }
+  };
+
+
+
+
+
+  // Ensure user profile exists
+  const ensureUserProfile = async () => {
+    try {
+      console.log('Checking if profile exists for user:', user.id);
+      const { data: profileData, error } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Error checking user profile:', error);
+      }
+
+      if (!profileData) {
+        console.log('Creating profile for user:', user.id);
+        // If profile doesn't exist, create it
+        await supabase
+          .from('profiles')
+          .insert([{
+            id: user.id,
+            full_name: user?.user_metadata?.full_name || 'User',
+            avatar_url: user?.user_metadata?.avatar_url || null,
+            email: user?.email || null
+          }]);
+      } else {
+        console.log('User profile exists:', profileData);
+      }
+    } catch (err) {
+      console.error('Error checking/creating user profile:', err);
+    }
+  };
+
+  // Load data when component mounts or user changes
+  useEffect(() => {
+    if (!user) return;
+
+    // Load initial data
+    loadData();
+
+    // Fetch notifications
+    fetchNotifications();
+
+    // Set up real-time subscriptions
+    const subscriptions = setupSubscriptions();
+
+    // Clean up subscriptions when component unmounts
+    return () => {
+      if (subscriptions && subscriptions.cleanup) {
+        subscriptions.cleanup();
+      }
+    };
+  }, [user, currentPage, postsPerPage, sortBy]);
+
+  // Handlers for real-time updates
+  const handleNewPost = async (newPost: any) => {
+    try {
+      // Fetch user data for the post
+      const { data: userData, error: userError } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url')
+        .eq('id', newPost.user_id)
+        .single();
+
+      if (userError) {
+        console.error('Error fetching user data for new post:', userError);
+        return;
+      }
+
+      // Create a complete post object with user data
+      const completePost = {
+        ...newPost,
+        user: userData || {
+          id: newPost.user_id,
+          full_name: newPost.user_id.substring(0, 8) + '...',
+          avatar_url: `https://ui-avatars.com/api/?name=${newPost.user_id.substring(0, 2)}&background=random`
+        },
+        likes_count: 0,
+        comments_count: 0,
+        liked_by_user: false
+      };
+
+      // Add the new post to the beginning of the posts array
+      setPosts(prevPosts => [completePost, ...prevPosts]);
+    } catch (error) {
+      console.error('Error handling new post:', error);
+    }
+  };
+
+  const handleUpdatedPost = async (updatedPost: any) => {
+    try {
+      // Update the post in the state
+      setPosts(prevPosts =>
+        prevPosts.map(post =>
+          post.id === updatedPost.id
+            ? { ...post, ...updatedPost }
+            : post
+        )
+      );
+    } catch (error) {
+      console.error('Error handling updated post:', error);
+    }
+  };
+
+  const handleDeletedPost = (postId: string) => {
+    try {
+      // Remove the post from the state
+      setPosts(prevPosts => prevPosts.filter(post => post.id !== postId));
+    } catch (error) {
+      console.error('Error handling deleted post:', error);
+    }
+  };
+
+  const fetchCommentUserData = async (comment: any) => {
+    try {
+      // Fetch user data for the comment
+      const { data: userData, error: userError } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url')
+        .eq('id', comment.user_id)
+        .single();
+
+      if (userError) {
+        console.error('Error fetching user data for comment:', userError);
+        return;
+      }
+
+      // Create a complete comment object with user data
+      const completeComment = {
+        ...comment,
+        user: userData || {
+          id: comment.user_id,
+          full_name: comment.user_id.substring(0, 8) + '...',
+          avatar_url: `https://ui-avatars.com/api/?name=${comment.user_id.substring(0, 2)}&background=random`
+        }
+      };
+
+      // Add the new comment to the comments for this post
+      setPostComments(prev => ({
+        ...prev,
+        [comment.post_id]: [...(prev[comment.post_id] || []), completeComment]
+      }));
+    } catch (error) {
+      console.error('Error fetching comment user data:', error);
+    }
+  };
+
+
+  // Set up real-time subscriptions
+  const setupSubscriptions = () => {
+    if (!user) return { cleanup: () => {} };
+
+    console.log('Setting up real-time subscriptions for user:', user.id);
+
+    // Set up Firebase real-time subscriptions
+    let firebaseNotificationsUnsubscribe: (() => void) | null = null;
+    let firebaseTrendingTopicsUnsubscribe: (() => void) | null = null;
+
+    try {
+      console.log('Setting up Firebase real-time notifications subscription');
+
+      // Subscribe to notifications for this user
+      // Use a simple query without ordering to avoid index errors
+      try {
+        firebaseNotificationsUnsubscribe = firebase.firestore()
+          .collection('notifications')
+          .where('userId', '==', user.id)
+          .limit(20)
+          .onSnapshot(snapshot => {
+            try {
+              // Process notifications
+              let newNotifications = snapshot.docs.map(doc => {
+                const data = doc.data();
+                return {
+                  id: doc.id,
+                  user_id: data.userId,
+                  type: data.type,
+                  title: data.title,
+                  message: data.message,
+                  link: data.link,
+                  read: data.read,
+                  created_at: data.createdAt instanceof firebase.firestore.Timestamp ?
+                    data.createdAt.toDate() :
+                    (typeof data.createdAt === 'string' ? new Date(data.createdAt) : new Date())
+                };
+              });
+
+              // Sort manually by date (newest first)
+              newNotifications.sort((a, b) => {
+                return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+              });
+
+              console.log('Real-time notifications update:', newNotifications.length);
+              setNotifications(newNotifications);
+
+              // Update unread count
+              const unreadCount = newNotifications.filter(n => !n.read).length;
+              setUnreadNotificationsCount(unreadCount);
+            } catch (processingError) {
+              console.error('Error processing notifications snapshot:', processingError);
+            }
+          }, error => {
+            console.error('Error in Firebase notifications subscription:', error);
+            // Fallback to regular fetch on subscription error
+            fetchNotifications();
+          });
+      } catch (setupError) {
+        console.error('Error setting up notifications subscription:', setupError);
+        // Fallback to regular fetch
+        fetchNotifications();
+      }
+    } catch (error) {
+      console.error('Error setting up Firebase notifications subscription:', error);
+    }
+
+    try {
+      console.log('Setting up Firebase real-time trending topics subscription');
+
+      // Subscribe to social posts to calculate trending topics in real-time
+      // Use a simple query without ordering to avoid index errors
+      try {
+        firebaseTrendingTopicsUnsubscribe = firebase.firestore()
+          .collection('social_posts')
+          .limit(100) // Get the most recent 100 posts to calculate trends
+          .onSnapshot(snapshot => {
+          try {
+            // Extract hashtags from posts
+            const hashtags: {[key: string]: number} = {};
+
+            snapshot.docs.forEach(doc => {
+              try {
+                const post = doc.data();
+
+                // Extract hashtags from content
+                const hashtagRegex = /#(\w+)/g;
+                const matches = post.content?.match(hashtagRegex);
+
+                if (matches) {
+                  matches.forEach((tag: string) => {
+                    hashtags[tag] = (hashtags[tag] || 0) + 1;
+                  });
+                }
+
+                // Also check for hashtags in the hashtags array
+                if (post.hashtags && Array.isArray(post.hashtags)) {
+                  post.hashtags.forEach((tag: string) => {
+                    // Ensure the tag has a # prefix
+                    const formattedTag = tag.startsWith('#') ? tag : `#${tag}`;
+                    hashtags[formattedTag] = (hashtags[formattedTag] || 0) + 1;
+                  });
+                }
+              } catch (docError) {
+                console.error('Error processing post document:', docError);
+              }
+            });
+
+            // Convert to array and sort by count
+            const topicsArray = Object.entries(hashtags).map(([name, count], index) => ({
+              id: index + 1,
+              name: name.replace('#', ''), // Remove # prefix for consistency
+              count
+            }));
+
+            // Sort by count (descending)
+            topicsArray.sort((a, b) => b.count - a.count);
+
+            // Take top 5
+            const top5 = topicsArray.slice(0, 5);
+
+            console.log('Real-time trending topics update:', top5.length);
+            setTrendingTopics(top5);
+          } catch (processingError) {
+            console.error('Error processing trending topics:', processingError);
+            // Use default trending topics as fallback
+            setTrendingTopics([
+              { id: 101, name: 'HealthyLiving', count: 128 },
+              { id: 102, name: 'MentalHealth', count: 96 },
+              { id: 103, name: 'Nutrition', count: 87 },
+              { id: 104, name: 'Fitness', count: 76 },
+              { id: 105, name: 'Wellness', count: 65 }
+            ]);
+          }
+        }, error => {
+          console.error('Error in Firebase trending topics subscription:', error);
+          // Use default trending topics as fallback
+          setTrendingTopics([
+            { id: 101, name: 'HealthyLiving', count: 128 },
+            { id: 102, name: 'MentalHealth', count: 96 },
+            { id: 103, name: 'Nutrition', count: 87 },
+            { id: 104, name: 'Fitness', count: 76 },
+            { id: 105, name: 'Wellness', count: 65 }
+          ]);
+        });
+      } catch (setupError) {
+        console.error('Error setting up trending topics subscription:', setupError);
+        // Use default trending topics as fallback
+        setTrendingTopics([
+          { id: 101, name: 'HealthyLiving', count: 128 },
+          { id: 102, name: 'MentalHealth', count: 96 },
+          { id: 103, name: 'Nutrition', count: 87 },
+          { id: 104, name: 'Fitness', count: 76 },
+          { id: 105, name: 'Wellness', count: 65 }
+        ]);
+      }
+    } catch (error) {
+      console.error('Error setting up Firebase trending topics subscription:', error);
+      // Use default trending topics as fallback
+      setTrendingTopics([
+        { id: 101, name: 'HealthyLiving', count: 128 },
+        { id: 102, name: 'MentalHealth', count: 96 },
+        { id: 103, name: 'Nutrition', count: 87 },
+        { id: 104, name: 'Fitness', count: 76 },
+        { id: 105, name: 'Wellness', count: 65 }
+      ]);
+    }
+
+    // Set up real-time subscription for posts
+    const postsSubscription = supabase
+      .channel('social_posts_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'social_posts'
+        },
+        (payload) => {
+          console.log('Post change detected:', payload);
+
+          // Handle different types of changes
+          if (payload.eventType === 'INSERT') {
+            // For new posts, fetch the post and add it to the state
+            handleNewPost(payload.new);
+          } else if (payload.eventType === 'UPDATE') {
+            // For updated posts, update the post in the state
+            handleUpdatedPost(payload.new);
+          } else if (payload.eventType === 'DELETE') {
+            // For deleted posts, remove the post from the state
+            handleDeletedPost(payload.old.id);
+          }
+        }
+      )
+      .subscribe();
+
+    // Set up real-time subscription for likes
+    const likesSubscription = supabase
+      .channel('post_likes_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'post_likes'
+        },
+        (payload) => {
+          console.log('Like change detected:', payload);
+
+          // Handle different types of changes
+          if (payload.eventType === 'INSERT') {
+            // For new likes, increment the likes count for the post
+            const postId = payload.new.post_id;
+            const isUserLike = payload.new.user_id === user.id;
+
+            setPosts(prevPosts =>
+              prevPosts.map(post => {
+                if (post.id === postId) {
+                  return {
+                    ...post,
+                    likes_count: post.likes_count + 1,
+                    liked_by_user: isUserLike ? true : post.liked_by_user
+                  };
+                }
+                return post;
+              })
+            );
+          } else if (payload.eventType === 'DELETE') {
+            // For removed likes, decrement the likes count for the post
+            const postId = payload.old.post_id;
+            const isUserLike = payload.old.user_id === user.id;
+
+            setPosts(prevPosts =>
+              prevPosts.map(post => {
+                if (post.id === postId) {
+                  return {
+                    ...post,
+                    likes_count: Math.max(0, post.likes_count - 1),
+                    liked_by_user: isUserLike ? false : post.liked_by_user
+                  };
+                }
+                return post;
+              })
+            );
+          }
+        }
+      )
+      .subscribe();
+
+    // Set up real-time subscription for comments
+    const commentsSubscription = supabase
+      .channel('post_comments_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'post_comments'
+        },
+        (payload) => {
+          console.log('Comment change detected:', payload);
+
+          // Handle different types of changes
+          if (payload.eventType === 'INSERT') {
+            // For new comments, increment the comments count for the post
+            const postId = payload.new.post_id;
+
+            // Update the post's comment count
+            setPosts(prevPosts =>
+              prevPosts.map(post => {
+                if (post.id === postId) {
+                  return {
+                    ...post,
+                    comments_count: post.comments_count + 1
+                  };
+                }
+                return post;
+              })
+            );
+
+            // If the comments for this post are currently being viewed, add the new comment
+            if (activeCommentPostId === postId) {
+              // Fetch the user data for the comment
+              fetchCommentUserData(payload.new);
+            }
+          } else if (payload.eventType === 'DELETE') {
+            // For deleted comments, decrement the comments count for the post
+            const postId = payload.old.post_id;
+
+            setPosts(prevPosts =>
+              prevPosts.map(post => {
+                if (post.id === postId) {
+                  return {
+                    ...post,
+                    comments_count: Math.max(0, post.comments_count - 1)
+                  };
+                }
+                return post;
+              })
+            );
+
+            // If the comments for this post are currently being viewed, remove the deleted comment
+            if (activeCommentPostId === postId) {
+              setPostComments(prev => ({
+                ...prev,
+                [postId]: prev[postId]?.filter(comment => comment.id !== payload.old.id) || []
+              }));
+            }
+          }
+        }
+      )
+      .subscribe();
+
+    // Set up real-time subscription for notifications
+    const notificationsSubscription = supabase
+      .channel('notifications_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'notifications',
+          filter: `user_id=eq.${user.id}`
+        },
+        (payload) => {
+          console.log('Notification change detected:', payload);
+
+          if (payload.eventType === 'INSERT') {
+            // Add the new notification to the state
+            setNotifications(prev => [payload.new, ...prev]);
+            setUnreadNotificationsCount(prev => prev + 1);
+          } else if (payload.eventType === 'UPDATE') {
+            // Update the notification in the state
+            setNotifications(prev =>
+              prev.map(notification =>
+                notification.id === payload.new.id ? payload.new : notification
+              )
+            );
+
+            // If notification was marked as read, update the unread count
+            if (payload.old.read === false && payload.new.read === true) {
+              setUnreadNotificationsCount(prev => Math.max(0, prev - 1));
+            }
+          } else if (payload.eventType === 'DELETE') {
+            // Remove the notification from the state
+            setNotifications(prev =>
+              prev.filter(notification => notification.id !== payload.old.id)
+            );
+
+            // If the deleted notification was unread, update the count
+            if (payload.old.read === false) {
+              setUnreadNotificationsCount(prev => Math.max(0, prev - 1));
+            }
+          }
+        }
+      )
+      .subscribe();
+
+    return {
+      cleanup: () => {
+        // Clean up Supabase subscriptions
+        supabase.removeChannel(postsSubscription);
+        supabase.removeChannel(likesSubscription);
+        supabase.removeChannel(commentsSubscription);
+        supabase.removeChannel(notificationsSubscription);
+
+        // Clean up Firebase subscriptions
+        if (firebaseNotificationsUnsubscribe) {
+          firebaseNotificationsUnsubscribe();
+        }
+        if (firebaseTrendingTopicsUnsubscribe) {
+          firebaseTrendingTopicsUnsubscribe();
+        }
+      }
+    };
+  };
+
+
+
+  // Handle refresh
+  const handleRefresh = async () => {
+    if (isLoading) return;
+
+    setIsLoading(true);
+    setCurrentPage(0);
+
+    try {
+      await fetchPosts(0, false);
+    } catch (error) {
+      console.error('Error refreshing posts:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle load more
+  const handleLoadMore = async () => {
+    if (isLoading || !hasMorePosts) return;
+
+    setIsLoading(true);
+
+    try {
+      const nextPage = currentPage + 1;
+      await fetchPosts(nextPage, true);
+      setCurrentPage(nextPage);
+    } catch (error) {
+      console.error('Error loading more posts:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle post options menu
+  const togglePostOptions = (postId: string) => {
+    setShowPostOptions(prev => prev === postId ? null : postId);
+  };
+
+  // Handle post editing
+  const handleEditPost = (post: any) => {
+    setEditingPost(post);
+    setNewPostContent(post.content);
+    setNewPostImagePreview(post.image_url);
+    setShowPostModal(true);
+    setShowPostOptions(null);
+  };
+
+  // Handle post deletion
+  const handleDeletePost = async (postId: string) => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from('social_posts')
+        .delete()
+        .eq('id', postId)
+        .eq('user_id', user.id); // Ensure only the post owner can delete it
+
+      if (error) {
+        console.error('Error deleting post:', error);
+        throw error;
+      }
+
+      // Update UI
+      setPosts(prevPosts => prevPosts.filter(post => post.id !== postId));
+      setShowPostOptions(null);
+
+      // Show confirmation
+      setConfirmationMessage('Post deleted successfully');
+      setShowConfirmationDialog(true);
+    } catch (error) {
+      console.error('Error deleting post:', error);
+    }
+  };
+
+  // Handle post creation or update
+  const handleCreatePost = async () => {
+    if (!user || !newPostContent.trim()) return;
+
+    // Check if post has at least one hashtag
+    if (postHashtags.length === 0) {
+      setConfirmationMessage('Please add at least one hashtag to your post');
+      setShowConfirmationDialog(true);
+      return;
+    }
+
+    setIsSubmittingPost(true);
+
+    try {
+      let imageUrl = null;
+
+      // Upload image if one is selected
+      if (newPostImage) {
+        console.log('Uploading image for post:', newPostImage.name);
+        imageUrl = await socialService.uploadPostImage(newPostImage, user.id);
+        console.log('Image uploaded successfully, URL:', imageUrl);
+      } else if (newPostImagePreview && editingPost) {
+        // Keep existing image URL when editing
+        imageUrl = editingPost.image_url;
+      }
+
+      // Extract hashtags from content if not already provided
+      const extractedHashtags = newPostContent.match(/#\w+/g) || [];
+      const allHashtags = [...new Set([...postHashtags, ...extractedHashtags])];
+
+      if (editingPost) {
+        // Update existing post - not implemented for Firebase yet
+        setConfirmationMessage('Editing posts is not supported yet');
+        setShowConfirmationDialog(true);
+      } else {
+        // Create new post using Firebase
+        console.log('Creating new post with content:', newPostContent.trim(), 'image URL:', imageUrl);
+
+        try {
+          // Create post in Firebase
+          const newPost = await socialService.createPost({
+            userId: user.id,
+            content: newPostContent.trim(),
+            imageUrl: imageUrl,
+            tags: allHashtags
+          });
+
+          console.log('Post created successfully in Firebase:', newPost);
+
+          // Show confirmation
+          setConfirmationMessage('Post created successfully');
+          setShowConfirmationDialog(true);
+
+          // Refresh posts to show the new one at the top
+          handleRefresh();
+        } catch (firebaseError) {
+          console.error('Error creating post in Firebase:', firebaseError);
+
+          // Fallback to Supabase if Firebase fails
+          console.log('Falling back to Supabase for post creation');
+
+          const { data: newPost, error } = await supabase
+            .from('social_posts')
+            .insert([
+              {
+                user_id: user.id,
+                content: newPostContent.trim(),
+                image_url: imageUrl,
+                hashtags: allHashtags,
+                is_anonymous: isAnonymous
+              }
+            ])
+            .select()
+            .single();
+
+          if (error) {
+            console.error('Error creating post in Supabase:', error);
+            throw error;
+          }
+
+          console.log('Post created successfully in Supabase:', newPost);
+
+          if (newPost) {
+            // Show confirmation
+            setConfirmationMessage('Post created successfully');
+            setShowConfirmationDialog(true);
+
+            // Refresh posts to show the new one at the top
+            handleRefresh();
+          }
+        }
+      }
+
+      // Clear form and close modal
+      setNewPostContent('');
+      setNewPostImage(null);
+      setNewPostImagePreview(null);
+      setPostHashtags([]);
+      setIsAnonymous(false);
+      setEditingPost(null);
+      setShowPostModal(false);
+    } catch (error) {
+      console.error('Error creating post:', error);
+    } finally {
+      setIsSubmittingPost(false);
+    }
+  };
+
+  // Handle image selection for new post
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setNewPostImage(file);
+
+    // Create preview URL
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setNewPostImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Remove selected image
+  const handleRemoveImage = () => {
+    setNewPostImage(null);
+    setNewPostImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSortBy(e.target.value);
+  };
+
+  const handleLike = async (postId: string) => {
+    if (!user) return;
+
+    try {
+      const post = posts.find(p => p.id === postId);
+      if (!post) return;
+
+      console.log('Handling like for post:', postId, 'Current liked status:', post.liked_by_user);
+
+      if (post.liked_by_user) {
+        // Unlike the post - delete the like
+        const { error } = await supabase
+          .from('post_likes')
+          .delete()
+          .eq('post_id', postId)
+          .eq('user_id', user.id);
+
+        if (error) {
+          console.error('Error unliking post:', error);
+          throw error;
+        }
+
+        console.log('Post unliked successfully');
+      } else {
+        // Like the post - insert a new like
+        const { error } = await supabase
+          .from('post_likes')
+          .insert([
+            {
+              post_id: postId,
+              user_id: user.id
+            }
+          ]);
+
+        if (error) {
+          console.error('Error liking post:', error);
+          throw error;
+        }
+
+        console.log('Post liked successfully');
+
+        // Create notification for the post author
+        try {
+          // Get the post to find its author
+          const post = posts.find(p => p.id === postId);
+
+          if (post && post.user_id !== user.id) {
+            // Get current user's name
+            const { data: userData } = await supabase
+              .from('profiles')
+              .select('full_name')
+              .eq('id', user.id)
+              .single();
+
+            const userName = userData?.full_name || 'Someone';
+
+            // Create notification for the post author
+            const { error: notificationError } = await supabase
+              .from('notifications')
+              .insert({
+                user_id: post.user_id,
+                type: 'like',
+                title: 'New Like',
+                message: `${userName} liked your post`,
+                link: `/social/post/${postId}`,
+                read: false,
+                created_at: new Date().toISOString()
+              });
+
+            if (notificationError) {
+              console.error('Error creating like notification:', notificationError);
+            } else {
+              console.log('Like notification created successfully');
+            }
+          }
+        } catch (notifError) {
+          console.error('Error creating notification:', notifError);
+        }
+      }
+
+      // Update local state immediately for better UX
+      setPosts(posts.map(post =>
+        post.id === postId
+          ? { ...post, liked_by_user: !post.liked_by_user, likes_count: post.liked_by_user ? post.likes_count - 1 : post.likes_count + 1 }
+          : post
+      ));
+    } catch (error) {
+      console.error('Error liking/unliking post:', error);
+    }
+  };
+
+  // Format time ago for notifications
+  const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    if (diffInSeconds < 60) {
+      return t('time.justNow', 'Just now');
+    }
+
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    if (diffInMinutes < 60) {
+      return t('time.minutesAgo', '{{count}} minutes ago', { count: diffInMinutes });
+    }
+
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) {
+      return t('time.hoursAgo', '{{count}} hours ago', { count: diffInHours });
+    }
+
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) {
+      return t('time.daysAgo', '{{count}} days ago', { count: diffInDays });
+    }
+
+    // For older dates, return the formatted date
+    return date.toLocaleDateString();
+  };
+
+  // Process text to highlight hashtags, mentions, and links
+  const processText = (text: string) => {
+    if (!text) return '';
+
+    // Replace hashtags with styled spans and make them clickable
+    const hashtagRegex = /(#\w+)/g;
+    let processedText = text.replace(hashtagRegex, '<span class="text-blue-500 dark:text-blue-400 font-medium cursor-pointer hashtag" data-tag="$1">$1</span>');
+
+    // Replace mentions with styled spans
+    const mentionRegex = /(@\w+)/g;
+    processedText = processedText.replace(mentionRegex, '<span class="text-purple-500 dark:text-purple-400 font-medium">$1</span>');
+
+    // Replace URLs with clickable links
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    processedText = processedText.replace(urlRegex, '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 underline hover:text-blue-800 dark:hover:text-blue-300">$1</a>');
+
+    return processedText;
+  };
+
+  // Handle adding a comment to a post
+  const handleAddComment = async (postId: string) => {
+    if (!user || !commentText.trim() || !postId) return;
+
+    setIsSubmittingComment(true);
+
+    try {
+      console.log('Adding comment to post:', postId, 'Content:', commentText.trim());
+      console.log('Reply to comment:', replyToComment);
+
+      // Check if post_comments table has parent_id column
+      let commentData = {
+        post_id: postId,
+        user_id: user.id,
+        content: commentText.trim()
+      };
+
+      // Add parent_id if replying to a comment and if the column exists
+      if (replyToComment) {
+        console.log('This is a reply to comment ID:', replyToComment.commentId);
+        // We'll try with parent_id, but if it fails, we'll retry without it
+        commentData = {
+          ...commentData,
+          parent_id: replyToComment.commentId
+        };
+      }
+
+      // Create the comment directly with Supabase
+      const { data: newComment, error } = await supabase
+        .from('post_comments')
+        .insert([commentData])
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error creating comment:', error);
+
+        // If error mentions parent_id, try again without it
+        if (error.message.includes('parent_id')) {
+          console.log('Retrying without parent_id');
+          const { data: retryComment, error: retryError } = await supabase
+            .from('post_comments')
+            .insert([{
+              post_id: postId,
+              user_id: user.id,
+              content: commentText.trim()
+            }])
+            .select()
+            .single();
+
+          if (retryError) {
+            console.error('Error creating comment (retry):', retryError);
+            throw retryError;
+          }
+
+          console.log('Comment created successfully on retry:', retryComment);
+
+          if (retryComment) {
+            handleCommentSuccess(retryComment, postId);
+          }
+          return;
+        }
+
+        throw error;
+      }
+
+      console.log('Comment created successfully:', newComment);
+
+      if (newComment) {
+        handleCommentSuccess(newComment, postId);
+      }
+    } catch (error) {
+      console.error('Error adding comment:', error);
+    } finally {
+      setIsSubmittingComment(false);
+    }
+  };
+
+  // Handle successful comment creation
+  const handleCommentSuccess = async (newComment: any, postId: string) => {
+    try {
+      // Get user data for the comment
+      const { data: userData } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url')
+        .eq('id', user.id)
+        .single();
+
+      // Create a complete comment object with user data
+      const commentWithUser = {
+        ...newComment,
+        user: userData || {
+          id: user.id,
+          full_name: user?.user_metadata?.full_name || 'User',
+          avatar_url: user?.user_metadata?.avatar_url || null
+        }
+      };
+
+      console.log('Adding comment to UI with user data:', commentWithUser);
+
+      // Add the new comment to the comments list
+      setPostComments(prev => {
+        const updatedComments = {
+          ...prev,
+          [postId]: [...(prev[postId] || []), commentWithUser]
+        };
+        console.log('Updated comments state:', updatedComments);
+        return updatedComments;
+      });
+
+      // Clear form and reset reply state
+      setCommentText('');
+      setReplyToComment(null);
+
+      // Update post comments count in the UI
+      setPosts(posts.map(post =>
+        post.id === postId
+          ? { ...post, comments_count: post.comments_count + 1 }
+          : post
+      ));
+
+      // Create notification for the post author
+      try {
+        // Get the post to find its author
+        const post = posts.find(p => p.id === postId);
+
+        if (post && post.user_id !== user.id) {
+          // Create notification for the post author
+          const { error: notificationError } = await supabase
+            .from('notifications')
+            .insert({
+              user_id: post.user_id,
+              type: 'comment',
+              title: 'New Comment',
+              message: `${userData?.full_name || 'Someone'} commented on your post`,
+              link: `/social/post/${postId}`,
+              read: false,
+              created_at: new Date().toISOString()
+            });
+
+          if (notificationError) {
+            console.error('Error creating comment notification:', notificationError);
+          } else {
+            console.log('Comment notification created successfully');
+          }
+        }
+      } catch (notifError) {
+        console.error('Error creating notification:', notifError);
+      }
+    } catch (error) {
+      console.error('Error in handleCommentSuccess:', error);
+    }
+  };
+
+  // Set up a reply to a comment
+  const handleReplyToComment = (commentId: string, userName: string) => {
+    console.log('Setting up reply to comment:', commentId, 'by user:', userName);
+    setReplyToComment({ commentId, userName });
+    setCommentText(`@${userName} `);
+  };
+
+  // Toggle comment section for a post
+  const toggleCommentSection = async (postId: string | null) => {
+    if (activeCommentPostId === postId) {
+      // Close the comment section
+      setActiveCommentPostId(null);
+      setCommentText('');
+      return;
+    }
+
+    // Open the comment section
+    setActiveCommentPostId(postId);
+    setCommentText('');
+
+    // Load comments for this post if we haven't already
+    if (postId && (!postComments[postId] || postComments[postId].length === 0)) {
+      await loadCommentsForPost(postId);
+    }
+  };
+
+  // Load comments for a specific post
+  const loadCommentsForPost = async (postId: string) => {
+    if (!postId) return;
+
+    setIsLoadingComments(true);
+
+    try {
+      console.log('Loading comments for post:', postId);
+
+      // Fetch comments from Supabase without trying to join profiles
+      const { data: commentsData, error: commentsError } = await supabase
+        .from('post_comments')
+        .select('*')
+        .eq('post_id', postId)
+        .order('created_at', { ascending: true });
+
+      if (commentsError) {
+        console.error('Error fetching comments:', commentsError);
+        return;
+      }
+
+      console.log('Comments loaded:', commentsData?.length || 0, 'comments', commentsData);
+
+      if (!commentsData || commentsData.length === 0) {
+        // No comments found, set empty array
+        setPostComments(prev => ({
+          ...prev,
+          [postId]: []
+        }));
+        setIsLoadingComments(false);
+        return;
+      }
+
+      // Fetch all user profiles at once for better performance
+      const userIds = [...new Set(commentsData.map(comment => comment.user_id))];
+      console.log('Fetching profiles for user IDs:', userIds);
+
+      const { data: userProfiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url')
+        .in('id', userIds);
+
+      if (profilesError) {
+        console.error('Error fetching user profiles:', profilesError);
+      }
+
+      console.log('User profiles loaded:', userProfiles?.length || 0, 'profiles', userProfiles);
+
+      // Create a map of user profiles for quick lookup
+      const userProfileMap = {};
+      (userProfiles || []).forEach(profile => {
+        userProfileMap[profile.id] = profile;
+      });
+
+      // Process comments with user data
+      const processedComments = commentsData.map(comment => {
+        const userProfile = userProfileMap[comment.user_id] || {
+          id: comment.user_id,
+          full_name: comment.user_id.substring(0, 8) + '...',  // Use part of the ID as a fallback name
+          avatar_url: `https://ui-avatars.com/api/?name=${comment.user_id.substring(0, 2)}&background=random`  // Generate avatar from ID
+        };
+
+        return {
+          ...comment,
+          user: userProfile
+        };
+      });
+
+      console.log('Processed comments with user data:', processedComments);
+
+      // Update state with the comments
+      setPostComments(prev => ({
+        ...prev,
+        [postId]: processedComments
+      }));
+    } catch (error) {
+      console.error('Error loading comments:', error);
+      // Set empty array on error to avoid loading state being stuck
+      setPostComments(prev => ({
+        ...prev,
+        [postId]: []
+      }));
+    } finally {
+      setIsLoadingComments(false);
+    }
+  };
+
+  // The updateTrendingTopics function is already defined above using useCallback
+
+  // Handle friend request
+  const handleAddFriend = async (friendId: string) => {
+    if (!user) return;
+
+    try {
+      console.log('Sending friend request to:', friendId, 'from user:', user.id);
+
+      // Get the friend's name for the UI
+      const friend = friendSuggestions.find(f => f.id === friendId);
+      const friendName = friend?.full_name || 'User';
+
+      // Check if this is a sample profile (starts with 00000000)
+      const isSampleProfile = friendId.startsWith('00000000');
+
+      if (isSampleProfile) {
+        console.log('This is a sample profile, skipping database friendship creation');
+        // Show success message to user
+        setConfirmationMessage(`Friend request sent to ${friendName}`);
+        setShowConfirmationDialog(true);
+        // Update UI to show request sent
+        setFriendSuggestions(friendSuggestions.filter(friend => friend.id !== friendId));
+        return;
+      }
+
+      // Use Firebase to send friend request
+      try {
+        const result = await socialService.sendFriendRequest(user.id, friendId);
+
+        if (result.success) {
+          console.log('Friend request sent via Firebase:', result);
+
+          // Show success message to user
+          setConfirmationMessage(`Friend request sent to ${friendName}`);
+          setShowConfirmationDialog(true);
+
+          // Update UI to show request sent
+          setFriendSuggestions(friendSuggestions.filter(friend => friend.id !== friendId));
+          return;
+        } else {
+          // If Firebase request failed with a specific message
+          console.warn('Firebase friend request result:', result);
+
+          if (result.message === 'Already friends' || result.message === 'Friend request already sent') {
+            setConfirmationMessage(result.message);
+            setShowConfirmationDialog(true);
+
+            // Remove from suggestions
+            setFriendSuggestions(prev => prev.filter(f => f.id !== friendId));
+            return;
+          }
+        }
+      } catch (firebaseError) {
+        console.error('Error sending friend request via Firebase:', firebaseError);
+        // Continue to Supabase fallback
+      }
+
+      // Fallback to Supabase if Firebase fails
+      try {
+        // Create a friend request
+        const { data, error } = await supabase
+          .from('user_friendships')
+          .insert({
+            user_id: user.id,
+            friend_id: friendId,
+            status: 'pending'
+          })
+          .select()
+          .single();
+
+        if (error) {
+          console.error('Error sending friend request:', error);
+          // If the table doesn't exist, we'll just create a notification
+          if (error.code === '42P01') { // relation does not exist
+            console.log('user_friendships table does not exist, skipping to notification');
+          }
+        } else {
+          console.log('Friend request sent successfully via Supabase:', data);
+        }
+      } catch (supabaseError) {
+        console.error('Error with Supabase friendship table:', supabaseError);
+        // Continue to notification creation even if friendship creation fails
+      }
+
+      // Create a notification for the friend
+      try {
+        // Get sender's name for the notification
+        const { data: userData } = await supabase
+          .from('profiles')
+          .select('full_name')
+          .eq('id', user.id)
+          .single();
+
+        const senderName = userData?.full_name || 'Someone';
+
+        const { error: notificationError } = await supabase
+          .from('notifications')
+          .insert({
+            user_id: friendId,
+            type: 'friend_request',
+            title: 'New Friend Request',
+            message: `${senderName} sent you a friend request`,
+            link: '/social/friends',
+            read: false,
+            created_at: new Date().toISOString()
+          });
+
+        if (notificationError) {
+          console.error('Error creating friend request notification:', notificationError);
+        } else {
+          console.log('Friend request notification created successfully');
+        }
+      } catch (notificationError) {
+        console.error('Error creating notification:', notificationError);
+      }
+
+      // Show success message to user
+      setConfirmationMessage(`Friend request sent to ${friendName}`);
+      setShowConfirmationDialog(true);
+
+      // Update UI to show request sent
+      setFriendSuggestions(friendSuggestions.filter(friend => friend.id !== friendId));
+    } catch (error) {
+      console.error('Error adding friend:', error);
+    }
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="social-feed-container"
+    >
+      <div className="container mx-auto px-2 py-4 social-feed-content">
+
+        <div className="flex flex-col md:flex-row gap-4">
+        {/* Main content */}
+        <div className="w-full md:w-2/3">
+          <div className="mb-3 flex justify-between items-center">
+            <motion.h1
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-2xl font-bold text-gray-900 dark:text-white"
+            >
+              {t('social.feed')}
+            </motion.h1>
+            <div className="flex items-center space-x-2">
+              {/* Notifications button */}
+              <div className="relative">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="flex items-center text-blue-500 hover:text-blue-600 relative"
+                  onClick={() => {
+                    setShowNotifications(!showNotifications);
+                    if (!showNotifications) {
+                      // Mark all notifications as read when opening
+                      markAllNotificationsAsRead();
+                    }
+                  }}
+                  aria-label="Notifications"
+                  data-notifications-toggle
+                >
+                  <Bell className="w-5 h-5 mr-1" />
+                  {t('social.notifications', 'Notifications')}
+                  {unreadNotificationsCount > 0 && (
+                    <span className="absolute -top-2 -right-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform bg-red-500 rounded-full">
+                      {unreadNotificationsCount > 9 ? '9+' : unreadNotificationsCount}
+                    </span>
+                  )}
+                </motion.button>
+
+                {/* Notifications dropdown */}
+                {showNotifications && (
+                  <div
+                    ref={notificationsRef}
+                    className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden z-50 border border-gray-200 dark:border-gray-700"
+                  >
+                    <div className="p-3 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                      <h3 className="font-semibold text-gray-900 dark:text-white">{t('social.notifications', 'Notifications')}</h3>
+                      {unreadNotificationsCount > 0 && (
+                        <button
+                          className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+                          onClick={markAllNotificationsAsRead}
+                        >
+                          {t('social.markAllAsRead', 'Mark all as read')}
+                        </button>
+                      )}
+                    </div>
+                    <div className="max-h-96 overflow-y-auto">
+                      {notifications.length === 0 ? (
+                        <div className="p-4 text-center text-gray-500 dark:text-gray-400">
+                          {t('social.noNotifications', 'No notifications yet')}
+                        </div>
+                      ) : (
+                        notifications.map(notification => (
+                          <div
+                            key={notification.id}
+                            className={`p-3 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer ${!notification.read ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
+                            onClick={() => markNotificationAsRead(notification.id)}
+                          >
+                            <div className="flex items-start">
+                              <div className="flex-shrink-0 mr-3">
+                                {notification.type === 'like' && (
+                                  <div className="w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-500 dark:text-red-400">
+                                    <Heart size={16} />
+                                  </div>
+                                )}
+                                {notification.type === 'comment' && (
+                                  <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-500 dark:text-blue-400">
+                                    <MessageCircle size={16} />
+                                  </div>
+                                )}
+                                {notification.type === 'friend_request' && (
+                                  <div className="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-500 dark:text-green-400">
+                                    <UserPlus size={16} />
+                                  </div>
+                                )}
+                              </div>
+                              <div className="flex-1">
+                                <p className="text-sm text-gray-800 dark:text-gray-200">{notification.message}</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                  {formatTimeAgo(notification.created_at)}
+                                </p>
+                              </div>
+                              {!notification.read && (
+                                <div className="w-2 h-2 bg-blue-500 rounded-full ml-2 mt-2"></div>
+                              )}
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Refresh button */}
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleRefresh}
+                className="flex items-center text-blue-500 hover:text-blue-600"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <Loader2 className="w-5 h-5 mr-1 animate-spin" />
+                ) : (
+                  <RefreshCw className="w-5 h-5 mr-1" />
+                )}
+                {t('common.refresh')}
+              </motion.button>
+              <div className="relative">
+                <select
+                  className="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg appearance-none pr-8"
+                  value={sortBy}
+                  onChange={handleSortChange}
+                >
+                  <option value="recent">{t('social.recent')}</option>
+                  <option value="trending">{t('social.trending')}</option>
+                  <option value="top">{t('social.top')}</option>
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                  <Filter className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Joined Channels section */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.05 }}
+            className="mb-6"
+          >
+            <JoinedChannelsList />
+          </motion.div>
+
+          {/* All Channels section */}
+          {!isLoadingChannels && channels.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="mb-6"
+            >
+              <ChannelList />
+            </motion.div>
+          )}
+
+          {/* Create post card */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 mb-6"
+          >
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700">
+                <img
+                  src={user?.user_metadata?.avatar_url || 'https://via.placeholder.com/40'}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div
+                className="flex-1 px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-full text-gray-500 dark:text-gray-400 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600"
+                onClick={() => setShowPostModal(true)}
+              >
+                {t('social.whatsOnYourMind')}
+              </div>
+              <button
+                className="p-2 rounded-full text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                onClick={() => setShowPostModal(true)}
+              >
+                <PlusCircle className="w-6 h-6" />
+              </button>
+            </div>
+          </motion.div>
+
+          {/* Post creation modal */}
+          {showPostModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="bg-white dark:bg-gray-800 rounded-xl shadow-lg w-full max-w-lg"
+              >
+                <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                    {editingPost ? t('social.editPost', 'Edit Post') : t('social.createPost')}
+                  </h2>
+                  <button
+                    className="p-1 rounded-full text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
+                    onClick={() => setShowPostModal(false)}
+                  >
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
+
+                <div className="p-4">
+                  <div className="flex items-center mb-4">
+                    <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700 mr-3">
+                      <img
+                        src={user?.user_metadata?.avatar_url || 'https://via.placeholder.com/40'}
+                        alt="Profile"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900 dark:text-white">
+                        {user?.user_metadata?.full_name || user?.email}
+                      </p>
+                    </div>
+                  </div>
+
+                  <textarea
+                    className="w-full p-3 bg-gray-100 dark:bg-gray-700 rounded-lg text-gray-800 dark:text-gray-200 min-h-[120px] mb-4"
+                    placeholder={t('social.whatsOnYourMind')}
+                    value={newPostContent}
+                    onChange={(e) => setNewPostContent(e.target.value)}
+                  />
+
+                  {/* Hashtags input */}
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      {t('social.hashtags')} <span className="text-red-500">*</span>
+                    </label>
+                    <HashtagInput
+                      hashtags={postHashtags}
+                      onChange={setPostHashtags}
+                      placeholder={t('social.addHashtags')}
+                    />
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      {t('social.hashtagsRequired')}
+                    </p>
+                  </div>
+
+                  {/* Anonymous posting option */}
+                  <div className="mb-4 flex items-center">
+                    <input
+                      type="checkbox"
+                      id="anonymous-post"
+                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      checked={isAnonymous}
+                      onChange={(e) => setIsAnonymous(e.target.checked)}
+                    />
+                    <label htmlFor="anonymous-post" className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                      {t('social.postAnonymously')}
+                    </label>
+                  </div>
+
+                  {/* Image preview */}
+                  {newPostImagePreview && (
+                    <div className="relative mb-4">
+                      <img
+                        src={newPostImagePreview}
+                        alt="Preview"
+                        className="w-full h-auto rounded-lg max-h-60 object-contain bg-gray-100 dark:bg-gray-700"
+                      />
+                      <button
+                        className="absolute top-2 right-2 p-1 bg-gray-800 bg-opacity-70 rounded-full text-white"
+                        onClick={handleRemoveImage}
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
+                    </div>
+                  )}
+
+                  <div className="flex justify-between items-center">
+                    <button
+                      className="flex items-center text-gray-700 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      <Image className="w-5 h-5 mr-2" />
+                      {t('social.addImage')}
+                    </button>
+
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      className="hidden"
+                      accept="image/*"
+                      onChange={handleImageSelect}
+                    />
+
+                    <button
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                      disabled={!newPostContent.trim() || isSubmittingPost}
+                      onClick={handleCreatePost}
+                    >
+                      {isSubmittingPost ? (
+                        <>
+                          <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                          {t('common.posting')}
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-5 h-5 mr-2" />
+                          {t('social.post')}
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          )}
+
+          {/* Firebase Social Feed */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="mb-6"
+          >
+            <FirebaseSocialFeed />
+          </motion.div>
+
+          {/* Legacy Supabase Posts list - Hidden */}
+          {false && isLoading ? (
+            <div className="flex justify-center py-12">
+              <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+            </div>
+          ) : false && posts.length > 0 ? (
+            <div className="space-y-6">
+              <AnimatePresence>
+                {posts.map((post, index) => {
+                  console.log('Rendering post:', post.id, 'Content:', post.content, 'Image URL:', post.image_url);
+                  return (
+                  <motion.div
+                    key={post.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="post-card bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden"
+                  >
+                    {/* Post header */}
+                    <div className="post-header">
+                      <div className="post-user">
+                        <div className="post-avatar">
+                          <img
+                            src={post.user.avatar_url || 'https://via.placeholder.com/40'}
+                            alt={post.user.full_name}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div className="post-user-info">
+                          <h3 className="post-username">{post.user.full_name}</h3>
+                          <p className="post-time">
+                            <TimeAgo date={post.created_at} />
+                          </p>
+                        </div>
+                      </div>
+                      <div className="relative">
+                        <button
+                          className="p-2 rounded-full text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
+                          onClick={() => togglePostOptions(post.id)}
+                          aria-label="Post options"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                          </svg>
+                        </button>
+
+                        {/* Post options menu */}
+                        {showPostOptions === post.id && (
+                          <motion.div
+                            ref={postOptionsRef}
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden z-10 border border-gray-200 dark:border-gray-700"
+                          >
+                            {post.user_id === user?.id && (
+                              <>
+                                <button
+                                  className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center text-gray-700 dark:text-gray-300"
+                                  onClick={() => handleEditPost(post)}
+                                >
+                                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                  </svg>
+                                  {t('social.edit', 'Edit')}
+                                </button>
+                                <button
+                                  className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center text-red-600 dark:text-red-400"
+                                  onClick={() => handleDeletePost(post.id)}
+                                >
+                                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                  </svg>
+                                  {t('social.delete', 'Delete')}
+                                </button>
+                              </>
+                            )}
+                            <button
+                              className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center text-gray-700 dark:text-gray-300"
+                              onClick={() => {
+                                // Copy post link to clipboard
+                                navigator.clipboard.writeText(window.location.origin + '/social/post/' + post.id);
+                                setShowPostOptions(null);
+                                setConfirmationMessage('Post link copied to clipboard');
+                                setShowConfirmationDialog(true);
+                              }}
+                            >
+                              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                              </svg>
+                              {t('social.copyLink', 'Copy Link')}
+                            </button>
+                          </motion.div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Post content */}
+                    <div className="post-content">
+                      <p className="post-text"
+                        dangerouslySetInnerHTML={{
+                          __html: processText(post.content)
+                        }}
+                        onClick={(e) => {
+                          // Handle hashtag clicks
+                          const target = e.target as HTMLElement;
+                          if (target.classList.contains('hashtag')) {
+                            const tag = target.getAttribute('data-tag');
+                            if (tag) {
+                              // Remove the # symbol and navigate to the hashtag page
+                              navigate(`/social/hashtag/${tag.substring(1)}`);
+                            }
+                          }
+                        }}
+                      />
+
+                      {/* Post image */}
+                      {post.image_url && (
+                        <div className="post-image">
+                          <img
+                            src={post.image_url}
+                            alt="Post image"
+                            className="w-full h-auto max-h-96 object-contain"
+                            onError={(e) => {
+                              console.error('Error loading image:', post.image_url);
+                              e.currentTarget.style.display = 'none';
+                            }}
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Post stats */}
+                    <div className="px-4 py-3 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-750">
+                      <div className="flex justify-between items-center text-sm text-gray-500 dark:text-gray-400">
+                        <div className="flex items-center space-x-2">
+                          <div className="flex items-center">
+                            <Heart className={`w-4 h-4 mr-1 ${post.liked_by_user ? 'text-red-500 fill-current' : ''}`} />
+                            <span>{post.likes_count}</span>
+                          </div>
+                          <div className="flex items-center">
+                            <MessageCircle className="w-4 h-4 mr-1" />
+                            <span>{post.comments_count}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Post actions */}
+                    <div className="post-actions">
+                      <button
+                        className={`post-action-button ${post.liked_by_user ? 'text-red-500' : 'text-gray-500 dark:text-gray-400'}`}
+                        onClick={() => handleLike(post.id)}
+                      >
+                        <Heart className={`post-action-icon ${post.liked_by_user ? 'fill-current' : ''}`} />
+                        {t('social.like')}
+                      </button>
+                      <button
+                        className="post-action-button text-gray-500 dark:text-gray-400"
+                        onClick={() => toggleCommentSection(post.id)}
+                      >
+                        <MessageCircle className="post-action-icon" />
+                        {t('social.comment')}
+                      </button>
+                      <button
+                        className="post-action-button text-gray-500 dark:text-gray-400"
+                        onClick={() => {
+                          if (navigator.share) {
+                            // Use Web Share API if available
+                            navigator.share({
+                              title: 'CareAI Social Post',
+                              text: post.content.substring(0, 100) + (post.content.length > 100 ? '...' : ''),
+                              url: window.location.origin + '/social/post/' + post.id,
+                            })
+                            .catch(error => console.log('Error sharing:', error));
+                          } else {
+                            // Fallback to clipboard
+                            navigator.clipboard.writeText(window.location.origin + '/social/post/' + post.id);
+                            setConfirmationMessage('Post link copied to clipboard');
+                            setShowConfirmationDialog(true);
+                          }
+                        }}
+                      >
+                        <svg className="post-action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                        </svg>
+                        {t('social.share')}
+                      </button>
+                    </div>
+
+                    {/* Comment section */}
+                    {activeCommentPostId === post.id && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        className="comments-section"
+                      >
+                        {/* Comment input */}
+                        <div className="comment-input-container">
+                          <div className="comment-avatar">
+                            <img
+                              src={user?.user_metadata?.avatar_url || 'https://via.placeholder.com/40'}
+                              alt="Profile"
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <div className="comment-input-wrapper">
+                            {replyToComment && activeCommentPostId === post.id && (
+                              <div className="flex items-center mb-2 bg-blue-50 dark:bg-blue-900/20 p-2 rounded-lg">
+                                <span className="text-sm text-gray-600 dark:text-gray-300">
+                                  <strong>Replying to {replyToComment.userName}</strong> - Your reply will appear as a comment on this post
+                                </span>
+                                <button
+                                  className="ml-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                                  onClick={() => {
+                                    setReplyToComment(null);
+                                    setCommentText('');
+                                  }}
+                                >
+                                  <X className="w-4 h-4" />
+                                </button>
+                              </div>
+                            )}
+                            <input
+                              type="text"
+                              className="comment-input"
+                              placeholder={replyToComment ? `Reply to ${replyToComment.userName}...` : t('social.writeComment')}
+                              value={commentText}
+                              onChange={(e) => setCommentText(e.target.value)}
+                              onKeyPress={(e) => e.key === 'Enter' && handleAddComment(post.id)}
+                            />
+                            <button
+                              className="comment-send-button"
+                              disabled={!commentText.trim() || isSubmittingComment}
+                              onClick={() => handleAddComment(post.id)}
+                            >
+                              {isSubmittingComment ? (
+                                <Loader2 className="w-5 h-5 animate-spin" />
+                              ) : (
+                                <Send className="w-5 h-5" />
+                              )}
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Comments list */}
+                        {isLoadingComments ? (
+                          <div className="flex justify-center py-4">
+                            <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />
+                          </div>
+                        ) : postComments[post.id]?.length > 0 ? (
+                          <div className="comment-list">
+                            {postComments[post.id].map((comment) => {
+                              console.log('Rendering comment:', comment);
+                              return (
+                                <div key={comment.id} className="comment-item">
+                                  <div className="comment-avatar">
+                                    <img
+                                      src={comment.user?.avatar_url || 'https://via.placeholder.com/40'}
+                                      alt={comment.user?.full_name || 'User'}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  </div>
+                                  <div className="flex-1">
+                                    <div className="comment-content">
+                                      <div className="comment-author">
+                                        {comment.user?.full_name || 'User'}
+                                        {comment.parent_id && (
+                                          <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
+                                            replying to another comment
+                                          </span>
+                                        )}
+                                      </div>
+                                      <div className="comment-text"
+                                        dangerouslySetInnerHTML={{
+                                          __html: processText(comment.content)
+                                        }}
+                                      />
+                                    </div>
+                                    <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1 ml-2">
+                                      <span className="comment-time">{new Date(comment.created_at).toLocaleString()}</span>
+                                      <button
+                                        className="ml-3 text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                                        onClick={(e) => {
+                                          e.stopPropagation(); // Prevent event bubbling
+                                          handleReplyToComment(comment.id, comment.user?.full_name || 'User');
+                                        }}
+                                      >
+                                        Reply
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <div className="text-center py-6 bg-gray-50 dark:bg-gray-700 rounded-lg mt-4">
+                            <MessageCircle className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+                            <p className="text-gray-500 dark:text-gray-400 font-medium">
+                              {t('social.noComments')}
+                            </p>
+                          </div>
+                        )}
+
+                        {/* View more comments button - only show if there are more than 5 comments */}
+                        {post.comments_count > (postComments[post.id]?.length || 0) && (
+                          <button
+                            className="w-full py-2 text-center text-sm text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300"
+                            onClick={() => navigate(`/social/post/${post.id}`)}
+                          >
+                            {t('social.viewAllComments', { count: post.comments_count })}
+                          </button>
+                        )}
+                      </motion.div>
+                    )}
+                  </motion.div>
+                );
+                })}
+              </AnimatePresence>
+
+              {/* Load more button */}
+              {hasMorePosts && (
+                <div className="flex justify-center mt-6">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow-md flex items-center"
+                    onClick={handleLoadMore}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                        {t('common.loading')}
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                        {t('social.loadMore')}
+                      </>
+                    )}
+                  </motion.button>
+                </div>
+              )}
+            </div>
+          ) : null
+
+        {/* Sidebar */}
+        <div className="w-full md:w-1/3 lg:w-1/4 space-y-4">
+          {/* People You May Know */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <PeopleYouMayKnow
+              suggestions={friendSuggestions.map(friend => ({
+                id: friend.id,
+                full_name: friend.full_name || `User ${friend.id.substring(0, 8)}`,
+                avatar_url: friend.avatar_url || 'https://via.placeholder.com/40',
+                mutual_friends: 0
+              }))}
+              onSendFriendRequest={handleAddFriend}
+              onIgnoreSuggestion={(userId) => {
+                setFriendSuggestions(prev => prev.filter(f => f.id !== userId));
+              }}
+            />
+          </motion.div>
+
+          {/* Trending topics */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <TrendingTopics
+              topics={trendingTopics}
+            />
+          </motion.div>
+
+
+
+          {/* Social Ads */}
+          {socialAds.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35 }}
+            >
+              <SocialAd ad={socialAds[0]} />
+            </motion.div>
+          )}
+
+          {/* Health News Widget */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <HealthNewsWidget />
+          </motion.div>
+
+
+        </div>
+        </div>
+      </div>
+
+      {/* Confirmation Dialog */}
+      {showConfirmationDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white dark:bg-gray-800 rounded-xl shadow-lg w-full max-w-md p-6"
+          >
+            <div className="text-center mb-4">
+              <div className="w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">{t('common.success')}</h3>
+              <p className="text-gray-600 dark:text-gray-300">{confirmationMessage}</p>
+            </div>
+            <div className="flex justify-center">
+              <button
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                onClick={() => setShowConfirmationDialog(false)}
+                autoFocus
+              >
+                {t('common.ok')}
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </motion.div>
+  );
+};
+
+export default SocialFeedPage;

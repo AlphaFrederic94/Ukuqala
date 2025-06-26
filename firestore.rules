@@ -1,0 +1,51 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow read/write access to all users for development
+    // WARNING: This is insecure and should be changed for production
+    match /{document=**} {
+      allow read, write: if true;
+    }
+    
+    // For production, you should use more restrictive rules like:
+    // match /user_profiles/{userId} {
+    //   allow read: if request.auth != null;
+    //   allow write: if request.auth != null && request.auth.uid == userId;
+    // }
+    
+    // match /chat_groups/{groupId} {
+    //   allow read: if request.auth != null;
+    //   allow write: if request.auth != null;
+    // }
+    
+    // match /chat_group_members/{memberId} {
+    //   allow read: if request.auth != null;
+    //   allow write: if request.auth != null;
+    // }
+    
+    // match /chat_group_messages/{messageId} {
+    //   allow read: if request.auth != null;
+    //   allow write: if request.auth != null;
+    // }
+    
+    // match /social_posts/{postId} {
+    //   allow read: if request.auth != null;
+    //   allow write: if request.auth != null;
+    // }
+    
+    // match /post_comments/{commentId} {
+    //   allow read: if request.auth != null;
+    //   allow write: if request.auth != null;
+    // }
+    
+    // match /post_likes/{likeId} {
+    //   allow read: if request.auth != null;
+    //   allow write: if request.auth != null;
+    // }
+    
+    // match /fcm_tokens/{tokenId} {
+    //   allow read: if request.auth != null && request.auth.uid == tokenId;
+    //   allow write: if request.auth != null && request.auth.uid == tokenId;
+    // }
+  }
+}

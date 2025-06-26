@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1000" height="700" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <!-- Gradient Definitions -->
+    <linearGradient id="blue-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3a86ff" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#0072ff" stop-opacity="1"/>
+    </linearGradient>
+    <linearGradient id="purple-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8338ec" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#5e17eb" stop-opacity="1"/>
+    </linearGradient>
+    <linearGradient id="green-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#059669" stop-opacity="1"/>
+    </linearGradient>
+    <linearGradient id="orange-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fb923c" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#ea580c" stop-opacity="1"/>
+    </linearGradient>
+    
+    <!-- Shadow Filter -->
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-color="#000000" flood-opacity="0.2"/>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1000" height="700" fill="#f8fafc" rx="10" ry="10"/>
+  <text x="500" y="40" font-family="Arial" font-size="24" font-weight="bold" text-anchor="middle" fill="#1e293b">Ukuqala Sequence Diagram Overview</text>
+  
+  <!-- Actors -->
+  <rect x="100" y="80" width="100" height="50" rx="8" ry="8" fill="white" stroke="#cbd5e1" stroke-width="2" filter="url(#shadow)"/>
+  <text x="150" y="110" font-family="Arial" font-size="14" text-anchor="middle" fill="#334155">User</text>
+  
+  <rect x="250" y="80" width="100" height="50" rx="8" ry="8" fill="url(#blue-gradient)" stroke="#bfdbfe" stroke-width="2" filter="url(#shadow)"/>
+  <text x="300" y="110" font-family="Arial" font-size="14" text-anchor="middle" fill="white">Frontend</text>
+  
+  <rect x="400" y="80" width="100" height="50" rx="8" ry="8" fill="url(#green-gradient)" stroke="#bbf7d0" stroke-width="2" filter="url(#shadow)"/>
+  <text x="450" y="110" font-family="Arial" font-size="14" text-anchor="middle" fill="white">API Gateway</text>
+  
+  <rect x="550" y="80" width="100" height="50" rx="8" ry="8" fill="url(#purple-gradient)" stroke="#e9d5ff" stroke-width="2" filter="url(#shadow)"/>
+  <text x="600" y="110" font-family="Arial" font-size="14" text-anchor="middle" fill="white">Services</text>
+  
+  <rect x="700" y="80" width="100" height="50" rx="8" ry="8" fill="url(#orange-gradient)" stroke="#fed7aa" stroke-width="2" filter="url(#shadow)"/>
+  <text x="750" y="110" font-family="Arial" font-size="14" text-anchor="middle" fill="white">Database</text>
+  
+  <rect x="850" y="80" width="100" height="50" rx="8" ry="8" fill="#94a3b8" stroke="#64748b" stroke-width="2" filter="url(#shadow)"/>
+  <text x="900" y="110" font-family="Arial" font-size="14" text-anchor="middle" fill="white">External APIs</text>
+  
+  <!-- Lifelines -->
+  <line x1="150" y1="130" x2="150" y2="650" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="5,5"/>
+  <line x1="300" y1="130" x2="300" y2="650" stroke="#bfdbfe" stroke-width="2" stroke-dasharray="5,5"/>
+  <line x1="450" y1="130" x2="450" y2="650" stroke="#bbf7d0" stroke-width="2" stroke-dasharray="5,5"/>
+  <line x1="600" y1="130" x2="600" y2="650" stroke="#e9d5ff" stroke-width="2" stroke-dasharray="5,5"/>
+  <line x1="750" y1="130" x2="750" y2="650" stroke="#fed7aa" stroke-width="2" stroke-dasharray="5,5"/>
+  <line x1="900" y1="130" x2="900" y2="650" stroke="#64748b" stroke-width="2" stroke-dasharray="5,5"/>
+  
+  <!-- Authentication Flow -->
+  <text x="50" y="170" font-family="Arial" font-size="16" font-weight="bold" fill="#1e293b">Authentication Flow</text>
+  
+  <!-- User to Frontend -->
+  <rect x="150" y="180" width="150" height="30" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1" rx="5" ry="5"/>
+  <polygon points="290,195 280,190 280,200" fill="#bfdbfe"/>
+  <text x="225" y="200" font-family="Arial" font-size="12" text-anchor="middle" fill="#334155">Login Credentials</text>
+  
+  <!-- Frontend to API Gateway -->
+  <rect x="300" y="220" width="150" height="30" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1" rx="5" ry="5"/>
+  <polygon points="440,235 430,230 430,240" fill="#bfdbfe"/>
+  <text x="375" y="240" font-family="Arial" font-size="12" text-anchor="middle" fill="#334155">Auth Request</text>
+  
+  <!-- API Gateway to Database -->
+  <rect x="450" y="260" width="300" height="30" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1" rx="5" ry="5"/>
+  <polygon points="740,275 730,270 730,280" fill="#bbf7d0"/>
+  <text x="600" y="280" font-family="Arial" font-size="12" text-anchor="middle" fill="#334155">Validate Credentials</text>
+  
+  <!-- Database to API Gateway -->
+  <rect x="450" y="300" width="300" height="30" fill="#fff7ed" stroke="#fed7aa" stroke-width="1" rx="5" ry="5"/>
+  <polygon points="460,315 470,310 470,320" fill="#fed7aa"/>
+  <text x="600" y="320" font-family="Arial" font-size="12" text-anchor="middle" fill="#334155">Return Session Token</text>
+  
+  <!-- API Gateway to Frontend -->
+  <rect x="300" y="340" width="150" height="30" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1" rx="5" ry="5"/>
+  <polygon points="310,355 320,350 320,360" fill="#bbf7d0"/>
+  <text x="375" y="360" font-family="Arial" font-size="12" text-anchor="middle" fill="#334155">Auth Response</text>
+  
+  <!-- Frontend to User -->
+  <rect x="150" y="380" width="150" height="30" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1" rx="5" ry="5"/>
+  <polygon points="160,395 170,390 170,400" fill="#bfdbfe"/>
+  <text x="225" y="400" font-family="Arial" font-size="12" text-anchor="middle" fill="#334155">Redirect to Home</text>
+  
+  <!-- Disease Prediction Flow -->
+  <text x="50" y="440" font-family="Arial" font-size="16" font-weight="bold" fill="#1e293b">Disease Prediction Flow</text>
+  
+  <!-- User to Frontend -->
+  <rect x="150" y="450" width="150" height="30" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1" rx="5" ry="5"/>
+  <polygon points="290,465 280,460 280,470" fill="#bfdbfe"/>
+  <text x="225" y="470" font-family="Arial" font-size="12" text-anchor="middle" fill="#334155">Input Symptoms</text>
+  
+  <!-- Frontend to Services -->
+  <rect x="300" y="490" width="300" height="30" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1" rx="5" ry="5"/>
+  <polygon points="590,505 580,500 580,510" fill="#bfdbfe"/>
+  <text x="450" y="510" font-family="Arial" font-size="12" text-anchor="middle" fill="#334155">Process Prediction Request</text>
+  
+  <!-- Services to External APIs -->
+  <rect x="600" y="530" width="300" height="30" fill="#f0f1f5" stroke="#cbd5e1" stroke-width="1" rx="5" ry="5"/>
+  <polygon points="890,545 880,540 880,550" fill="#cbd5e1"/>
+  <text x="750" y="550" font-family="Arial" font-size="12" text-anchor="middle" fill="#334155">ML Model Processing</text>
+  
+  <!-- External APIs to Services -->
+  <rect x="600" y="570" width="300" height="30" fill="#f0f1f5" stroke="#cbd5e1" stroke-width="1" rx="5" ry="5"/>
+  <polygon points="610,585 620,580 620,590" fill="#cbd5e1"/>
+  <text x="750" y="590" font-family="Arial" font-size="12" text-anchor="middle" fill="#334155">Return Predictions</text>
+  
+  <!-- Services to Frontend -->
+  <rect x="300" y="610" width="300" height="30" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1" rx="5" ry="5"/>
+  <polygon points="310,625 320,620 320,630" fill="#99f6e4"/>
+  <text x="450" y="630" font-family="Arial" font-size="12" text-anchor="middle" fill="#334155">Display Results</text>
+</svg>
