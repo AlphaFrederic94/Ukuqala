@@ -29,7 +29,7 @@
     "@radix-ui/react-tabs": "^1.1.9",
     "@radix-ui/react-toast": "^1.x.x",
     "@react-three/drei": "^9.88.0",
-    "@react-three/fiber": "^9.1.2",
+    "@react-three/fiber": "^8.18.0",
     "@supabase/supabase-js": "^2.x.x",
     "@tensorflow/tfjs": "^4.17.0",
     "@types/bcryptjs": "^2.4.6",
