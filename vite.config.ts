@@ -60,5 +60,19 @@ export default defineConfig({
     target: 'es2020',
     sourcemap: true,
     chunkSizeWarningLimit: 2000 // Increase chunk size warning limit
+  },
+  preview: {
+    host: '0.0.0.0',
+    port: process.env.PORT ? parseInt(process.env.PORT) : 4173,
+    allowedHosts: [
+      'ukuqala.onrender.com',
+      'localhost',
+      '127.0.0.1',
+      '0.0.0.0'
+    ],
+    cors: {
+      origin: true,
+      credentials: true
+    }
   }
 });
