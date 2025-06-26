@@ -1,0 +1,171 @@
+/* High Contrast Theme for Accessibility */
+
+.high-contrast {
+  /* Text colors */
+  --text-primary: #000000;
+  --text-secondary: #000000;
+  --text-tertiary: #000000;
+  --text-disabled: #595959;
+  
+  /* Background colors */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f0f0f0;
+  --bg-tertiary: #e0e0e0;
+  --bg-disabled: #cccccc;
+  
+  /* Button colors */
+  --btn-primary-bg: #000000;
+  --btn-primary-text: #ffffff;
+  --btn-secondary-bg: #ffffff;
+  --btn-secondary-text: #000000;
+  --btn-secondary-border: #000000;
+  
+  /* Link colors */
+  --link-color: #0000EE;
+  --link-visited: #551A8B;
+  --link-hover: #000000;
+  
+  /* Form elements */
+  --input-border: #000000;
+  --input-bg: #ffffff;
+  --input-text: #000000;
+  --input-placeholder: #595959;
+  --input-focus-border: #000000;
+  --input-focus-bg: #ffffff;
+  
+  /* Status colors */
+  --success: #006600;
+  --warning: #884400;
+  --error: #CC0000;
+  --info: #000099;
+  
+  /* Focus outline */
+  --focus-outline: 3px solid #000000;
+}
+
+/* Apply high contrast styles */
+.high-contrast body {
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+}
+
+.high-contrast a {
+  color: var(--link-color);
+  text-decoration: underline;
+}
+
+.high-contrast a:visited {
+  color: var(--link-visited);
+}
+
+.high-contrast a:hover,
+.high-contrast a:focus {
+  color: var(--link-hover);
+  text-decoration: underline;
+}
+
+/* Focus styles */
+.high-contrast *:focus {
+  outline: var(--focus-outline);
+  outline-offset: 2px;
+}
+
+/* Button styles */
+.high-contrast button,
+.high-contrast .btn {
+  border: 2px solid #000000;
+}
+
+.high-contrast button.primary,
+.high-contrast .btn-primary {
+  background-color: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+}
+
+.high-contrast button.secondary,
+.high-contrast .btn-secondary {
+  background-color: var(--btn-secondary-bg);
+  color: var(--btn-secondary-text);
+  border: 2px solid var(--btn-secondary-border);
+}
+
+/* Form elements */
+.high-contrast input,
+.high-contrast select,
+.high-contrast textarea {
+  border: 2px solid var(--input-border);
+  background-color: var(--input-bg);
+  color: var(--input-text);
+}
+
+.high-contrast input:focus,
+.high-contrast select:focus,
+.high-contrast textarea:focus {
+  border-color: var(--input-focus-border);
+  background-color: var(--input-focus-bg);
+}
+
+.high-contrast input::placeholder {
+  color: var(--input-placeholder);
+}
+
+/* Status messages */
+.high-contrast .success {
+  color: var(--success);
+  border: 1px solid var(--success);
+}
+
+.high-contrast .warning {
+  color: var(--warning);
+  border: 1px solid var(--warning);
+}
+
+.high-contrast .error {
+  color: var(--error);
+  border: 1px solid var(--error);
+}
+
+.high-contrast .info {
+  color: var(--info);
+  border: 1px solid var(--info);
+}
+
+/* Cards and containers */
+.high-contrast .card,
+.high-contrast .container {
+  border: 1px solid #000000;
+}
+
+/* Icons */
+.high-contrast svg {
+  fill: currentColor;
+}
+
+/* Tables */
+.high-contrast table {
+  border-collapse: collapse;
+}
+
+.high-contrast th,
+.high-contrast td {
+  border: 1px solid #000000;
+}
+
+.high-contrast th {
+  background-color: #e0e0e0;
+}
+
+/* Skip link for keyboard navigation */
+.high-contrast .skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #000000;
+  color: #ffffff;
+  padding: 8px;
+  z-index: 100;
+}
+
+.high-contrast .skip-link:focus {
+  top: 0;
+}

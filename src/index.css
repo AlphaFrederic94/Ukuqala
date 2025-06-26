@@ -1,0 +1,122 @@
+/* Import Spotify dark mode styles FIRST to ensure priority */
+@import './styles/darkMode.css';
+
+/* Import other theme styles */
+@import './styles/socialTheme.css';
+@import './styles/socialCards.css';
+@import './styles/auth.css';
+@import './styles/welcome.css';
+@import './styles/animations.css';
+@import './styles/discord.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Force theme variables to be available globally */
+:root {
+  --theme-version: "3.0-system-aware";
+  --cache-buster: "v2024-12-26-001";
+}
+
+/* Ensure consistent loading across browsers */
+* {
+  box-sizing: border-box;
+}
+
+/* Ensure consistent loading across browsers - removed forced dark mode */
+html {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* PWA Update Notification */
+.update-notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+  overflow: hidden;
+  max-width: 320px;
+  animation: slide-in 0.3s ease-out;
+}
+
+.update-inner {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.update-inner p {
+  margin: 0;
+  font-size: 14px;
+  color: #333;
+}
+
+#update-button {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+#update-button:hover {
+  background-color: #2563eb;
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateY(100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-float-slow {
+  animation: float 4s ease-in-out infinite;
+}
+
+.animate-float-slower {
+  animation: float 5s ease-in-out infinite;
+}
+
+.animate-float-slowest {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(20px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-20px); }
+}
+
+.animate-fade-in-out {
+  animation: fadeInOut 3s ease-in-out forwards;
+}

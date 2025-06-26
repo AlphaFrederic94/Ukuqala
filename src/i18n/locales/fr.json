@@ -1,0 +1,69 @@
+{
+  "common": {
+    "appName": "Care AI",
+    "home": "Accueil",
+    "predictions": "Prédictions",
+    "appointments": "Rendez-vous",
+    "nutrition": "Nutrition",
+    "healthTips": "Conseils Santé",
+    "analytics": "Analyses",
+    "profile": "Profil",
+    "settings": "Paramètres",
+    "darkMode": "Mode Sombre",
+    "lightMode": "Mode Clair",
+    "update": "Mettre à jour",
+    "change": "Modifier",
+    "readMore": "Lire Plus"
+  },
+  "nutrition": {
+    "dashboard": "Tableau de Bord",
+    "meals": "Suivi des Repas",
+    "hydration": "Hydratation",
+    "plan": "Plan Nutritionnel",
+    "history": "Historique des Repas"
+  },
+  "settings": {
+    "account": "Paramètres du compte",
+    "email": "Adresse e-mail",
+    "changeEmail": "Modifier votre adresse e-mail",
+    "password": "Mot de passe",
+    "changePassword": "Modifier votre mot de passe",
+    "notifications": "Notifications",
+    "emailNotifications": "Notifications par e-mail",
+    "receiveEmails": "Recevoir des mises à jour par e-mail",
+    "appointmentReminders": "Rappels de rendez-vous",
+    "reminderDesc": "Être notifié des rendez-vous à venir",
+    "preferences": "Préférences",
+    "language": "Langue",
+    "languageDesc": "Choisissez votre langue préférée",
+    "timezone": "Fuseau horaire",
+    "timezoneDesc": "Définir votre fuseau horaire local"
+  },
+  "healthTips": {
+    "title": "Conseils Santé & Ressources",
+    "categories": {
+      "all": "Tous les Conseils",
+      "mental": "Santé Mentale",
+      "diet": "Régime",
+      "exercise": "Exercice",
+      "lifestyle": "Style de Vie",
+      "sleep": "Sommeil"
+    },
+    "programs": {
+      "exercise": {
+        "title": "Programmes d'Exercice",
+        "bodyTypes": {
+          "ectomorph": "Ectomorphe",
+          "mesomorph": "Mésomorphe",
+          "endomorph": "Endomorphe"
+        }
+      }
+    }
+  },
+  "chatbot": {
+    "title": "Assistant Médical",
+    "placeholder": "Tapez votre question de santé...",
+    "greeting": "Bonjour! Je suis votre assistant médical. Comment puis-je vous aider aujourd'hui?",
+    "disclaimer": "Note: Ceci est uniquement pour information générale et ne remplace pas un avis médical professionnel."
+  }
+}

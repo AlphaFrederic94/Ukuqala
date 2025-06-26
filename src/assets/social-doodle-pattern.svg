@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="400" height="400" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Medical and social doodles -->
+  <path d="M50 50C55.5228 50 60 45.5228 60 40C60 34.4772 55.5228 30 50 30C44.4772 30 40 34.4772 40 40C40 45.5228 44.4772 50 50 50Z" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill-opacity="0.1"/>
+  <path d="M150 70C155.523 70 160 65.5228 160 60C160 54.4772 155.523 50 150 50C144.477 50 140 54.4772 140 60C140 65.5228 144.477 70 150 70Z" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill-opacity="0.1"/>
+  <path d="M250 50C255.523 50 260 45.5228 260 40C260 34.4772 255.523 30 250 30C244.477 30 240 34.4772 240 40C240 45.5228 244.477 50 250 50Z" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill-opacity="0.1"/>
+  <path d="M350 70C355.523 70 360 65.5228 360 60C360 54.4772 355.523 50 350 50C344.477 50 340 54.4772 340 60C340 65.5228 344.477 70 350 70Z" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill-opacity="0.1"/>
+  
+  <!-- Heart icon -->
+  <path d="M80 120C80 120 75 115 70 115C65 115 60 120 60 125C60 135 80 145 80 145C80 145 100 135 100 125C100 120 95 115 90 115C85 115 80 120 80 120Z" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill-opacity="0.1"/>
+  
+  <!-- Message bubble -->
+  <path d="M180 130H140C135 130 130 125 130 120V100C130 95 135 90 140 90H180C185 90 190 95 190 100V120C190 125 185 130 180 130ZM160 140V130" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill-opacity="0.1"/>
+  
+  <!-- User icon -->
+  <path d="M250 110C255.523 110 260 105.523 260 100C260 94.4772 255.523 90 250 90C244.477 90 240 94.4772 240 100C240 105.523 244.477 110 250 110Z" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill-opacity="0.1"/>
+  <path d="M270 130C270 120 260 110 250 110C240 110 230 120 230 130" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill-opacity="0.1"/>
+  
+  <!-- Share icon -->
+  <path d="M350 110C355.523 110 360 105.523 360 100C360 94.4772 355.523 90 350 90C344.477 90 340 94.4772 340 100C340 105.523 344.477 110 350 110Z" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill-opacity="0.1"/>
+  <path d="M350 150C355.523 150 360 145.523 360 140C360 134.477 355.523 130 350 130C344.477 130 340 134.477 340 140C340 145.523 344.477 150 350 150Z" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill-opacity="0.1"/>
+  <path d="M310 130C315.523 130 320 125.523 320 120C320 114.477 315.523 110 310 110C304.477 110 300 114.477 300 120C300 125.523 304.477 130 310 130Z" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill-opacity="0.1"/>
+  <path d="M340 105L320 115M320 125L340 135" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill-opacity="0.1"/>
+  
+  <!-- Stethoscope -->
+  <path d="M60 200C60 200 60 180 80 180H100C120 180 120 200 120 200V220C120 230 110 240 100 240C90 240 80 230 80 220C80 210 90 200 100 200C110 200 120 210 120 220" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill-opacity="0.1"/>
+  <path d="M60 190C65.5228 190 70 185.523 70 180C70 174.477 65.5228 170 60 170C54.4772 170 50 174.477 50 180C50 185.523 54.4772 190 60 190Z" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill-opacity="0.1"/>
+  
+  <!-- Medical cross -->
+  <path d="M170 170H150V190H170V210H190V190H210V170H190V150H170V170Z" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill-opacity="0.1"/>
+  
+  <!-- Pill -->
+  <path d="M270 170L240 200C235 205 235 215 240 220C245 225 255 225 260 220L290 190C295 185 295 175 290 170C285 165 275 165 270 170Z" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill-opacity="0.1"/>
+  
+  <!-- Thumbs up -->
+  <path d="M350 200V170H330C330 170 330 160 340 150C350 140 350 170 350 170" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill-opacity="0.1"/>
+  <path d="M350 170H370C375 170 380 175 380 180L375 195C375 195 370 200 365 200H350" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill-opacity="0.1"/>
+  
+  <!-- Bell notification -->
+  <path d="M60 270C60 270 80 260 80 240V230C80 225 75 220 70 220H50C45 220 40 225 40 230V240C40 260 60 270 60 270Z" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill-opacity="0.1"/>
+  <path d="M50 280C50 285 55 290 60 290C65 290 70 285 70 280" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill-opacity="0.1"/>
+  
+  <!-- Calendar -->
+  <path d="M150 290H190C195 290 200 285 200 280V240C200 235 195 230 190 230H150C145 230 140 235 140 240V280C140 285 145 290 150 290Z" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill-opacity="0.1"/>
+  <path d="M140 250H200M160 230V220M180 230V220" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill-opacity="0.1"/>
+  
+  <!-- Graph -->
+  <path d="M250 290H290C295 290 300 285 300 280V240C300 235 295 230 290 230H250C245 230 240 235 240 240V280C240 285 245 290 250 290Z" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill-opacity="0.1"/>
+  <path d="M250 270L260 260L270 270L280 250L290 260" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill-opacity="0.1"/>
+  
+  <!-- Star rating -->
+  <path d="M350 250L355 260L365 262L358 270L360 280L350 275L340 280L342 270L335 262L345 260L350 250Z" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill-opacity="0.1"/>
+  
+  <!-- At symbol -->
+  <path d="M80 350C90 350 100 340 100 330C100 320 90 310 80 310C70 310 60 320 60 330C60 340 70 350 80 350Z" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill-opacity="0.1"/>
+  <path d="M100 330C100 340 105 350 115 350C125 350 130 340 130 330C130 310 110 300 80 300C50 300 30 315 30 340C30 365 50 380 80 380C110 380 130 365 130 340" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill-opacity="0.1"/>
+  
+  <!-- Hashtag -->
+  <path d="M160 310V370M180 310V370M150 330H190M150 350H190" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill-opacity="0.1"/>
+  
+  <!-- Camera -->
+  <path d="M250 370H290C295 370 300 365 300 360V320C300 315 295 310 290 310H250C245 310 240 315 240 320V360C240 365 245 370 250 370Z" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill-opacity="0.1"/>
+  <path d="M270 350C275.523 350 280 345.523 280 340C280 334.477 275.523 330 270 330C264.477 330 260 334.477 260 340C260 345.523 264.477 350 270 350Z" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill-opacity="0.1"/>
+  
+  <!-- Send/paper airplane -->
+  <path d="M350 340L330 330V350L340 345L350 370L370 310L330 330" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill-opacity="0.1"/>
+</svg>

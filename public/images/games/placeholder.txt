@@ -1,0 +1,6 @@
+For the games page, you'll need to add two images:
+
+1. tictactoe.jpg - An image of a tic-tac-toe game
+2. chess.jpg - An image of a chess board or chess pieces
+
+You can download these from stock photo sites or use game screenshots.

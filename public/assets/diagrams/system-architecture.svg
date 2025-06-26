@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1000" height="700" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <!-- Gradient Definitions -->
+    <linearGradient id="blue-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3a86ff" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#0072ff" stop-opacity="1"/>
+    </linearGradient>
+    <linearGradient id="purple-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8338ec" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#5e17eb" stop-opacity="1"/>
+    </linearGradient>
+    <linearGradient id="green-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#059669" stop-opacity="1"/>
+    </linearGradient>
+    <linearGradient id="orange-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fb923c" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#ea580c" stop-opacity="1"/>
+    </linearGradient>
+    <linearGradient id="red-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ef4444" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#dc2626" stop-opacity="1"/>
+    </linearGradient>
+    
+    <!-- Shadow Filter -->
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-color="#000000" flood-opacity="0.2"/>
+    </filter>
+    
+    <!-- Icons -->
+    <symbol id="database-icon" viewBox="0 0 24 24">
+      <path d="M12,3C7.58,3,4,4.79,4,7V17C4,19.21,7.58,21,12,21C16.42,21,20,19.21,20,17V7C20,4.79,16.42,3,12,3M12,5C16.41,5,18,6.79,18,7C18,7.21,16.41,9,12,9C7.59,9,6,7.21,6,7C6,6.79,7.59,5,12,5M18,9.08V12C18,12.21,16.41,14,12,14C7.59,14,6,12.21,6,12V9.08C7.23,10.19,9.57,11,12,11C14.43,11,16.77,10.19,18,9.08M6,14.08C7.23,15.19,9.57,16,12,16C14.43,16,16.77,15.19,18,14.08V17C18,17.21,16.41,19,12,19C7.59,19,6,17.21,6,17V14.08Z" />
+    </symbol>
+    
+    <symbol id="server-icon" viewBox="0 0 24 24">
+      <path d="M4,1H20A1,1 0 0,1 21,2V6A1,1 0 0,1 20,7H4A1,1 0 0,1 3,6V2A1,1 0 0,1 4,1M4,9H20A1,1 0 0,1 21,10V14A1,1 0 0,1 20,15H4A1,1 0 0,1 3,14V10A1,1 0 0,1 4,9M4,17H20A1,1 0 0,1 21,18V22A1,1 0 0,1 20,23H4A1,1 0 0,1 3,22V18A1,1 0 0,1 4,17M9,5H10V3H9V5M9,13H10V11H9V13M9,21H10V19H9V21M5,3V5H7V3H5M5,11V13H7V11H5M5,19V21H7V19H5Z" />
+    </symbol>
+    
+    <symbol id="cloud-icon" viewBox="0 0 24 24">
+      <path d="M19.35,10.03C18.67,6.59 15.64,4 12,4C9.11,4 6.6,5.64 5.35,8.03C2.34,8.36 0,10.9 0,14A6,6 0 0,0 6,20H19A5,5 0 0,0 24,15C24,12.36 21.95,10.22 19.35,10.03Z" />
+    </symbol>
+    
+    <symbol id="mobile-icon" viewBox="0 0 24 24">
+      <path d="M17,19H7V5H17M17,1H7C5.89,1 5,1.89 5,3V21A2,2 0 0,0 7,23H17A2,2 0 0,0 19,21V3C19,1.89 18.1,1 17,1Z" />
+    </symbol>
+    
+    <symbol id="web-icon" viewBox="0 0 24 24">
+      <path d="M16.36,14C16.44,13.34 16.5,12.68 16.5,12C16.5,11.32 16.44,10.66 16.36,10H19.74C19.9,10.64 20,11.31 20,12C20,12.69 19.9,13.36 19.74,14M14.59,19.56C15.19,18.45 15.65,17.25 15.97,16H18.92C17.96,17.65 16.43,18.93 14.59,19.56M14.34,14H9.66C9.56,13.34 9.5,12.68 9.5,12C9.5,11.32 9.56,10.65 9.66,10H14.34C14.43,10.65 14.5,11.32 14.5,12C14.5,12.68 14.43,13.34 14.34,14M12,19.96C11.17,18.76 10.5,17.43 10.09,16H13.91C13.5,17.43 12.83,18.76 12,19.96M8,8H5.08C6.03,6.34 7.57,5.06 9.4,4.44C8.8,5.55 8.35,6.75 8,8M5.08,16H8C8.35,17.25 8.8,18.45 9.4,19.56C7.57,18.93 6.03,17.65 5.08,16M4.26,14C4.1,13.36 4,12.69 4,12C4,11.31 4.1,10.64 4.26,10H7.64C7.56,10.66 7.5,11.32 7.5,12C7.5,12.68 7.56,13.34 7.64,14M12,4.03C12.83,5.23 13.5,6.57 13.91,8H10.09C10.5,6.57 11.17,5.23 12,4.03M18.92,8H15.97C15.65,6.75 15.19,5.55 14.59,4.44C16.43,5.07 17.96,6.34 18.92,8M12,2C6.47,2 2,6.5 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" />
+    </symbol>
+    
+    <symbol id="api-icon" viewBox="0 0 24 24">
+      <path d="M7,7H5A2,2 0 0,0 3,9V17H5V13H7V17H9V9A2,2 0 0,0 7,7M7,11H5V9H7M14,7H10V17H12V13H14A2,2 0 0,0 16,11V9A2,2 0 0,0 14,7M14,11H12V9H14M20,9V15H21V17H17V15H18V9H17V7H21V9H20Z" />
+    </symbol>
+    
+    <symbol id="load-balancer-icon" viewBox="0 0 24 24">
+      <path d="M17,4V10L15,8L13,10V4H9V20H13V14L15,16L17,14V20H21V4H17Z" />
+      <path d="M4,4H8V20H4V4Z" />
+    </symbol>
+    
+    <symbol id="gateway-icon" viewBox="0 0 24 24">
+      <path d="M12,21L15.6,16.2C14.6,15.45 13.35,15 12,15C10.65,15 9.4,15.45 8.4,16.2L12,21M12,3C7.95,3 4.21,4.34 1.2,6.6L3,9C5.5,7.12 8.62,6 12,6C15.38,6 18.5,7.12 21,9L22.8,6.6C19.79,4.34 16.05,3 12,3M12,9C9.3,9 6.81,9.89 4.8,11.4L6.6,13.8C8.1,12.67 9.97,12 12,12C14.03,12 15.9,12.67 17.4,13.8L19.2,11.4C17.19,9.89 14.7,9 12,9Z" />
+    </symbol>
+    
+    <symbol id="ml-icon" viewBox="0 0 24 24">
+      <path d="M5,3H7V5H5V10A2,2 0 0,1 3,12A2,2 0 0,1 5,14V19H7V21H5C3.93,20.73 3,20.1 3,19V15A2,2 0 0,0 1,13H0V11H1A2,2 0 0,0 3,9V5A2,2 0 0,1 5,3M19,3A2,2 0 0,1 21,5V9A2,2 0 0,0 23,11H24V13H23A2,2 0 0,0 21,15V19A2,2 0 0,1 19,21H17V19H19V14A2,2 0 0,1 21,12A2,2 0 0,1 19,10V5H17V3H19M12,15A1,1 0 0,1 13,16A1,1 0 0,1 12,17A1,1 0 0,1 11,16A1,1 0 0,1 12,15M8,15A1,1 0 0,1 9,16A1,1 0 0,1 8,17A1,1 0 0,1 7,16A1,1 0 0,1 8,15M16,15A1,1 0 0,1 17,16A1,1 0 0,1 16,17A1,1 0 0,1 15,16A1,1 0 0,1 16,15Z" />
+    </symbol>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1000" height="700" fill="#f8fafc" rx="10" ry="10"/>
+  <text x="500" y="40" font-family="Arial" font-size="24" font-weight="bold" text-anchor="middle" fill="#1e293b">Ukuqala System Architecture</text>
+  
+  <!-- Client Layer -->
+  <rect x="50" y="80" width="900" height="120" rx="10" ry="10" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="100" y="110" font-family="Arial" font-size="18" font-weight="bold" fill="#475569">Client Layer</text>
+  
+  <!-- Web Client -->
+  <rect x="150" y="130" width="120" height="60" rx="8" ry="8" fill="white" stroke="#cbd5e1" stroke-width="2" filter="url(#shadow)"/>
+  <use xlink:href="#web-icon" x="170" y="140" width="24" height="24" fill="#3a86ff"/>
+  <text x="210" y="157" font-family="Arial" font-size="14" text-anchor="middle" fill="#334155">Web Client</text>
+  <text x="210" y="175" font-family="Arial" font-size="10" text-anchor="middle" fill="#64748b">React/TypeScript</text>
+  
+  <!-- Mobile Client -->
+  <rect x="300" y="130" width="120" height="60" rx="8" ry="8" fill="white" stroke="#cbd5e1" stroke-width="2" filter="url(#shadow)"/>
+  <use xlink:href="#mobile-icon" x="320" y="140" width="24" height="24" fill="#3a86ff"/>
+  <text x="360" y="157" font-family="Arial" font-size="14" text-anchor="middle" fill="#334155">Mobile Client</text>
+  <text x="360" y="175" font-family="Arial" font-size="10" text-anchor="middle" fill="#64748b">PWA</text>
+  
+  <!-- Offline Storage -->
+  <rect x="450" y="130" width="120" height="60" rx="8" ry="8" fill="white" stroke="#cbd5e1" stroke-width="2" filter="url(#shadow)"/>
+  <use xlink:href="#database-icon" x="470" y="140" width="24" height="24" fill="#3a86ff"/>
+  <text x="510" y="157" font-family="Arial" font-size="14" text-anchor="middle" fill="#334155">Offline Storage</text>
+  <text x="510" y="175" font-family="Arial" font-size="10" text-anchor="middle" fill="#64748b">IndexedDB</text>
+  
+  <!-- UI Components -->
+  <rect x="600" y="130" width="120" height="60" rx="8" ry="8" fill="white" stroke="#cbd5e1" stroke-width="2" filter="url(#shadow)"/>
+  <text x="660" y="157" font-family="Arial" font-size="14" text-anchor="middle" fill="#334155">UI Components</text>
+  <text x="660" y="175" font-family="Arial" font-size="10" text-anchor="middle" fill="#64748b">Tailwind CSS</text>
+  
+  <!-- State Management -->
+  <rect x="750" y="130" width="120" height="60" rx="8" ry="8" fill="white" stroke="#cbd5e1" stroke-width="2" filter="url(#shadow)"/>
+  <text x="810" y="157" font-family="Arial" font-size="14" text-anchor="middle" fill="#334155">State Management</text>
+  <text x="810" y="175" font-family="Arial" font-size="10" text-anchor="middle" fill="#64748b">Context API</text>
+  
+  <!-- API Gateway Layer -->
+  <rect x="50" y="230" width="900" height="100" rx="10" ry="10" fill="#eff6ff" stroke="#bfdbfe" stroke-width="2"/>
+  <text x="100" y="260" font-family="Arial" font-size="18" font-weight="bold" fill="#2563eb">API Gateway Layer</text>
+  
+  <!-- Load Balancer -->
+  <rect x="150" y="270" width="120" height="50" rx="8" ry="8" fill="white" stroke="#bfdbfe" stroke-width="2" filter="url(#shadow)"/>
+  <use xlink:href="#load-balancer-icon" x="170" y="280" width="24" height="24" fill="#2563eb"/>
+  <text x="210" y="297" font-family="Arial" font-size="14" text-anchor="middle" fill="#334155">Load Balancer</text>
+  
+  <!-- API Gateway -->
+  <rect x="300" y="270" width="400" height="50" rx="8" ry="8" fill="url(#blue-gradient)" stroke="#bfdbfe" stroke-width="2" filter="url(#shadow)"/>
+  <use xlink:href="#gateway-icon" x="320" y="280" width="24" height="24" fill="white"/>
+  <text x="500" y="297" font-family="Arial" font-size="14" text-anchor="middle" fill="white" font-weight="bold">Supabase Edge Functions / API Gateway</text>
+  
+  <!-- Authentication -->
+  <rect x="730" y="270" width="140" height="50" rx="8" ry="8" fill="white" stroke="#bfdbfe" stroke-width="2" filter="url(#shadow)"/>
+  <text x="800" y="297" font-family="Arial" font-size="14" text-anchor="middle" fill="#334155">Authentication</text>
+  
+  <!-- Service Layer -->
+  <rect x="50" y="360" width="900" height="140" rx="10" ry="10" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="2"/>
+  <text x="100" y="390" font-family="Arial" font-size="18" font-weight="bold" fill="#16a34a">Service Layer</text>
+  
+  <!-- FastAPI Backend -->
+  <rect x="150" y="410" width="160" height="70" rx="8" ry="8" fill="url(#green-gradient)" stroke="#bbf7d0" stroke-width="2" filter="url(#shadow)"/>
+  <use xlink:href="#api-icon" x="170" y="430" width="24" height="24" fill="white"/>
+  <text x="230" y="435" font-family="Arial" font-size="14" text-anchor="middle" fill="white" font-weight="bold">FastAPI Backend</text>
+  <text x="230" y="455" font-family="Arial" font-size="10" text-anchor="middle" fill="white">ML Model Integration</text>
+  
+  <!-- Firebase Realtime -->
+  <rect x="340" y="410" width="160" height="70" rx="8" ry="8" fill="url(#orange-gradient)" stroke="#fed7aa" stroke-width="2" filter="url(#shadow)"/>
+  <text x="420" y="435" font-family="Arial" font-size="14" text-anchor="middle" fill="white" font-weight="bold">Firebase Services</text>
+  <text x="420" y="455" font-family="Arial" font-size="10" text-anchor="middle" fill="white">Realtime Features</text>
+  
+  <!-- Supabase Services -->
+  <rect x="530" y="410" width="160" height="70" rx="8" ry="8" fill="url(#blue-gradient)" stroke="#bfdbfe" stroke-width="2" filter="url(#shadow)"/>
+  <text x="610" y="435" font-family="Arial" font-size="14" text-anchor="middle" fill="white" font-weight="bold">Supabase Services</text>
+  <text x="610" y="455" font-family="Arial" font-size="10" text-anchor="middle" fill="white">Database & Storage</text>
+  
+  <!-- External APIs -->
+  <rect x="720" y="410" width="160" height="70" rx="8" ry="8" fill="white" stroke="#cbd5e1" stroke-width="2" filter="url(#shadow)"/>
+  <text x="800" y="435" font-family="Arial" font-size="14" text-anchor="middle" fill="#334155">External APIs</text>
+  <text x="800" y="455" font-family="Arial" font-size="10" text-anchor="middle" fill="#64748b">Weather, News, SMS</text>
+  
+  <!-- Data Layer -->
+  <rect x="50" y="530" width="900" height="140" rx="10" ry="10" fill="#fdf2f8" stroke="#fbcfe8" stroke-width="2"/>
+  <text x="100" y="560" font-family="Arial" font-size="18" font-weight="bold" fill="#db2777">Data Layer</text>
+  
+  <!-- PostgreSQL -->
+  <rect x="150" y="580" width="160" height="70" rx="8" ry="8" fill="url(#blue-gradient)" stroke="#bfdbfe" stroke-width="2" filter="url(#shadow)"/>
+  <use xlink:href="#database-icon" x="170" y="600" width="24" height="24" fill="white"/>
+  <text x="230" y="605" font-family="Arial" font-size="14" text-anchor="middle" fill="white" font-weight="bold">PostgreSQL</text>
+  <text x="230" y="625" font-family="Arial" font-size="10" text-anchor="middle" fill="white">User & Medical Data</text>
+  
+  <!-- Firestore -->
+  <rect x="340" y="580" width="160" height="70" rx="8" ry="8" fill="url(#orange-gradient)" stroke="#fed7aa" stroke-width="2" filter="url(#shadow)"/>
+  <use xlink:href="#database-icon" x="360" y="600" width="24" height="24" fill="white"/>
+  <text x="420" y="605" font-family="Arial" font-size="14" text-anchor="middle" fill="white" font-weight="bold">Firestore</text>
+  <text x="420" y="625" font-family="Arial" font-size="10" text-anchor="middle" fill="white">Social & Chat Data</text>
+  
+  <!-- Storage -->
+  <rect x="530" y="580" width="160" height="70" rx="8" ry="8" fill="white" stroke="#cbd5e1" stroke-width="2" filter="url(#shadow)"/>
+  <text x="610" y="605" font-family="Arial" font-size="14" text-anchor="middle" fill="#334155">Object Storage</text>
+  <text x="610" y="625" font-family="Arial" font-size="10" text-anchor="middle" fill="#64748b">Images & Media</text>
+  
+  <!-- ML Models -->
+  <rect x="720" y="580" width="160" height="70" rx="8" ry="8" fill="url(#purple-gradient)" stroke="#e9d5ff" stroke-width="2" filter="url(#shadow)"/>
+  <use xlink:href="#ml-icon" x="740" y="600" width="24" height="24" fill="white"/>
+  <text x="800" y="605" font-family="Arial" font-size="14" text-anchor="middle" fill="white" font-weight="bold">ML Models</text>
+  <text x="800" y="625" font-family="Arial" font-size="10" text-anchor="middle" fill="white">Prediction & Analysis</text>
+  
+  <!-- Connection Lines -->
+  <!-- Client to API Gateway -->
+  <line x1="210" y1="190" x2="210" y2="270" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5,5"/>
+  <line x1="360" y1="190" x2="360" y2="270" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5,5"/>
+  <line x1="510" y1="190" x2="500" y2="270" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5,5"/>
+  <line x1="660" y1="190" x2="500" y2="270" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5,5"/>
+  <line x1="810" y1="190" x2="800" y2="270" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5,5"/>
+  
+  <!-- API Gateway to Services -->
+  <line x1="210" y1="320" x2="230" y2="410" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5,5"/>
+  <line x1="500" y1="320" x2="230" y2="410" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5,5"/>
+  <line x1="500" y1="320" x2="420" y2="410" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5,5"/>
+  <line x1="500" y1="320" x2="610" y2="410" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5,5"/>
+  <line x1="500" y1="320" x2="800" y2="410" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5,5"/>
+  <line x1="800" y1="320" x2="610" y2="410" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5,5"/>
+  
+  <!-- Services to Data -->
+  <line x1="230" y1="480" x2="230" y2="580" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5,5"/>
+  <line x1="230" y1="480" x2="800" y2="580" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5,5"/>
+  <line x1="420" y1="480" x2="420" y2="580" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5,5"/>
+  <line x1="420" y1="480" x2="610" y2="580" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5,5"/>
+  <line x1="610" y1="480" x2="230" y2="580" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5,5"/>
+  <line x1="610" y1="480" x2="610" y2="580" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5,5"/>
+  <line x1="800" y1="480" x2="800" y2="580" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5,5"/>
+</svg>

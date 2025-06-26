@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/assets/logos/UKUQALA.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1db954" />
+    <meta name="description" content="Ukuqala - Revolutionary AI-powered healthcare for Africa" />
+    <link rel="apple-touch-icon" href="/assets/logos/Ukuqala.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <title>Ukuqala | AI Health Assistant</title>
+  </head>
+  <body style="background-color: #121212; color: #ffffff; margin: 0; padding: 0;">
+    <!-- Immediate theme initialization script -->
+    <script>
+      // Initialize theme immediately to prevent flash
+      const savedTheme = localStorage.getItem('themeMode');
+      const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+      // Determine theme to apply
+      let shouldUseDark = false;
+      if (savedTheme === 'dark') {
+        shouldUseDark = true;
+      } else if (savedTheme === 'light') {
+        shouldUseDark = false;
+      } else {
+        // system mode or no preference - use system
+        shouldUseDark = systemPrefersDark;
+        if (!savedTheme) {
+          localStorage.setItem('themeMode', 'system');
+        }
+      }
+
+      // Apply theme immediately
+      document.documentElement.setAttribute('data-theme-version', '3.0-system-aware');
+      if (shouldUseDark) {
+        document.documentElement.classList.add('dark');
+        document.body.style.backgroundColor = '#121212';
+        document.body.style.color = '#ffffff';
+      } else {
+        document.documentElement.classList.remove('dark');
+        document.body.style.backgroundColor = '#ffffff';
+        document.body.style.color = '#000000';
+      }
+
+      // Clear conflicting localStorage
+      const conflictingKeys = ['theme', 'darkMode', 'ui-theme', 'app-theme', 'theme-preference'];
+      conflictingKeys.forEach(key => {
+        if (localStorage.getItem(key)) {
+          localStorage.removeItem(key);
+        }
+      });
+
+      localStorage.setItem('theme-version', '3.0-system-aware');
+      console.log('🎨 Theme initialized immediately:', shouldUseDark ? 'dark' : 'light');
+    </script>
+
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

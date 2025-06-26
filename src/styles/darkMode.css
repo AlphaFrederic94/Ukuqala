@@ -1,0 +1,1389 @@
+/* CareAI Spotify-inspired Dark Mode Styles */
+
+/* CSS Variables for Spotify Color Palette */
+:root {
+  /* Spotify Primary Colors */
+  --spotify-black: #000000;
+  --spotify-dark-gray: #121212;
+  --spotify-medium-gray: #181818;
+  --spotify-light-gray: #282828;
+  --spotify-lighter-gray: #333333;
+
+  /* Spotify Text Colors */
+  --spotify-text-white: #ffffff;
+  --spotify-text-light: #b3b3b3;
+  --spotify-text-muted: #6b7280;
+
+  /* Spotify Accent Colors */
+  --spotify-green: #1db954;
+  --spotify-green-hover: #1ed760;
+  --spotify-green-dark: #1aa34a;
+}
+
+/* Dark Mode CSS Variables Mapping */
+.dark {
+  color-scheme: dark;
+
+  /* Background Mappings */
+  --bg-primary: var(--spotify-dark-gray);
+  --bg-secondary: var(--spotify-medium-gray);
+  --bg-tertiary: var(--spotify-light-gray);
+  --bg-elevated: var(--spotify-lighter-gray);
+
+  /* Text Mappings */
+  --text-primary: var(--spotify-text-white);
+  --text-secondary: var(--spotify-text-light);
+  --text-muted: var(--spotify-text-muted);
+
+  /* Accent Mappings */
+  --accent-primary: var(--spotify-green);
+  --accent-hover: var(--spotify-green-hover);
+}
+
+/* Frame/Panel Strategy - Pure Black for Maximum Contrast */
+.dark body,
+.dark .bg-white {
+  background-color: var(--spotify-black) !important;
+  color: var(--spotify-text-white) !important;
+}
+
+/* Force Spotify theme with highest priority */
+html.dark,
+html.dark body {
+  background-color: var(--spotify-dark-gray) !important;
+  color: var(--spotify-text-white) !important;
+}
+
+/* Ensure theme version is applied */
+html[data-theme-version="2.0-spotify"].dark {
+  background-color: var(--spotify-dark-gray) !important;
+}
+
+html[data-theme-version="2.0-spotify"].dark body {
+  background-color: var(--spotify-dark-gray) !important;
+  color: var(--spotify-text-white) !important;
+}
+
+/* Background Hierarchy - Complete Coverage */
+.dark .bg-gray-900,
+.dark .bg-gray-900\/50,
+.dark .bg-gray-900\/75 {
+  background-color: var(--spotify-black) !important;
+}
+
+.dark .bg-gray-800,
+.dark .bg-gray-800\/50,
+.dark .bg-gray-800\/75 {
+  background-color: var(--spotify-medium-gray) !important;
+}
+
+.dark .bg-gray-750 {
+  background-color: var(--spotify-light-gray) !important;
+}
+
+.dark .bg-gray-700,
+.dark .bg-gray-700\/50,
+.dark .bg-gray-700\/75 {
+  background-color: var(--spotify-light-gray) !important;
+}
+
+.dark .bg-gray-600,
+.dark .bg-gray-600\/50,
+.dark .bg-gray-600\/75 {
+  background-color: var(--spotify-lighter-gray) !important;
+}
+
+.dark .bg-gray-500 {
+  background-color: var(--spotify-lighter-gray) !important;
+}
+
+.dark .bg-gray-400 {
+  background-color: var(--spotify-light-gray) !important;
+}
+
+.dark .bg-gray-300 {
+  background-color: var(--spotify-light-gray) !important;
+}
+
+.dark .bg-gray-200 {
+  background-color: var(--spotify-lighter-gray) !important;
+}
+
+.dark .bg-gray-100,
+.dark .bg-gray-100\/50,
+.dark .bg-gray-100\/75 {
+  background-color: var(--spotify-dark-gray) !important;
+}
+
+.dark .bg-gray-50,
+.dark .bg-gray-50\/50,
+.dark .bg-gray-50\/75 {
+  background-color: var(--spotify-medium-gray) !important;
+}
+
+/* Hover States */
+.dark .hover\:bg-gray-50:hover {
+  background-color: var(--spotify-light-gray) !important;
+}
+
+.dark .hover\:bg-gray-100:hover {
+  background-color: var(--spotify-light-gray) !important;
+}
+
+.dark .hover\:bg-gray-200:hover {
+  background-color: var(--spotify-light-gray) !important;
+}
+
+.dark .hover\:bg-gray-700:hover {
+  background-color: var(--spotify-lighter-gray) !important;
+}
+
+.dark .hover\:bg-gray-800:hover {
+  background-color: var(--spotify-light-gray) !important;
+}
+
+/* Spotify Accent Colors - Replace Blue with Green */
+.dark .text-blue-500,
+.dark .text-blue-600,
+.dark .hover\:text-blue-500:hover,
+.dark .hover\:text-blue-600:hover {
+  color: var(--spotify-green) !important;
+}
+
+.dark .bg-blue-500,
+.dark .bg-blue-600,
+.dark .hover\:bg-blue-500:hover,
+.dark .hover\:bg-blue-600:hover,
+.dark .from-blue-500,
+.dark .to-blue-600 {
+  background-color: var(--spotify-green) !important;
+  background-image: none !important;
+}
+
+.dark .border-blue-500,
+.dark .border-blue-600 {
+  border-color: var(--spotify-green) !important;
+}
+
+.dark .ring-blue-500,
+.dark .ring-blue-600 {
+  --tw-ring-color: var(--spotify-green) !important;
+}
+
+/* Typography Hierarchy */
+.dark .text-gray-900 {
+  color: var(--spotify-text-white);
+}
+
+.dark .text-gray-800 {
+  color: var(--spotify-text-white);
+}
+
+.dark .text-gray-700 {
+  color: var(--spotify-text-light);
+}
+
+.dark .text-gray-600 {
+  color: var(--spotify-text-light);
+}
+
+.dark .text-gray-500 {
+  color: var(--spotify-text-muted);
+}
+
+.dark .text-gray-400 {
+  color: var(--spotify-text-muted);
+}
+
+/* Border Colors - Complete Coverage */
+.dark .border-gray-100 {
+  border-color: var(--spotify-light-gray) !important;
+}
+
+.dark .border-gray-200 {
+  border-color: var(--spotify-light-gray) !important;
+}
+
+.dark .border-gray-300 {
+  border-color: var(--spotify-lighter-gray) !important;
+}
+
+.dark .border-gray-400 {
+  border-color: var(--spotify-lighter-gray) !important;
+}
+
+.dark .border-gray-500 {
+  border-color: var(--spotify-lighter-gray) !important;
+}
+
+.dark .border-gray-600 {
+  border-color: var(--spotify-lighter-gray) !important;
+}
+
+.dark .border-gray-700 {
+  border-color: var(--spotify-lighter-gray) !important;
+}
+
+.dark .border-gray-800 {
+  border-color: var(--spotify-light-gray) !important;
+}
+
+.dark .border-gray-900 {
+  border-color: var(--spotify-lighter-gray) !important;
+}
+
+/* Border Radius and Shadows - Spotify Style */
+.dark .rounded-lg,
+.dark .rounded-xl,
+.dark .rounded-md {
+  border-radius: 8px;
+}
+
+.dark .shadow-sm {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.5) !important;
+}
+
+.dark .shadow,
+.dark .shadow-md {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.6) !important;
+}
+
+.dark .shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.6) !important;
+}
+
+.dark .shadow-xl {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Spotify-Style Card Components */
+.dark .card-hover {
+  background-color: var(--spotify-medium-gray);
+  border-radius: 8px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: none;
+}
+
+.dark .card-hover:hover {
+  background-color: var(--spotify-light-gray);
+  transform: translateY(-2px);
+}
+
+/* Form Elements - Spotify Style */
+.dark input,
+.dark select,
+.dark textarea {
+  background-color: var(--spotify-lighter-gray);
+  border-color: var(--spotify-lighter-gray);
+  color: var(--spotify-text-white);
+  border-radius: 4px;
+}
+
+.dark input:focus,
+.dark select:focus,
+.dark textarea:focus {
+  border-color: var(--spotify-green);
+  box-shadow: 0 0 0 2px rgba(29, 185, 84, 0.3);
+  outline: none;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: var(--spotify-text-light);
+}
+
+/* Button Styling - Spotify Inspired */
+.dark button.bg-blue-600,
+.dark .bg-blue-600 {
+  background-color: var(--spotify-green) !important;
+  color: var(--spotify-black);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  border-radius: 500px;
+  text-transform: uppercase;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+}
+
+.dark button.bg-blue-600:hover,
+.dark .bg-blue-600:hover {
+  background-color: var(--spotify-green-hover) !important;
+  transform: scale(1.04);
+}
+
+.dark button.bg-gray-200,
+.dark .bg-gray-200 {
+  background-color: var(--spotify-lighter-gray);
+  color: var(--spotify-text-white);
+  border-radius: 500px;
+}
+
+.dark button.bg-gray-200:hover,
+.dark .bg-gray-200:hover {
+  background-color: var(--spotify-light-gray);
+}
+
+/* Custom Scrollbar - Spotify Style */
+.dark ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: var(--spotify-dark-gray);
+  border-radius: 10px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: var(--spotify-lighter-gray);
+  border-radius: 10px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: var(--spotify-light-gray);
+}
+
+/* Smooth Transitions for Theme Switching */
+.dark-mode-transition {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dark *,
+.dark *::before,
+.dark *::after {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Focus Styles - Spotify Green */
+.dark *:focus {
+  outline-color: var(--spotify-green);
+}
+
+/* Text Selection - Spotify Green */
+.dark ::selection {
+  background-color: var(--spotify-green);
+  color: var(--spotify-black);
+}
+
+/* Spotify Animations */
+@keyframes spotifyScale {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+  100% { transform: scale(1); }
+}
+
+.dark .animate-spotify-scale {
+  animation: spotifyScale 0.2s ease-in-out;
+}
+
+/* Custom Shadows - Spotify Style */
+.dark .shadow-sm {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+}
+
+.dark .shadow {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5), 0 1px 2px 0 rgba(0, 0, 0, 0.6);
+}
+
+.dark .shadow-md {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.6);
+}
+
+.dark .shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.6);
+}
+
+.dark .shadow-xl {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.6);
+}
+
+.dark .shadow-spotify {
+  box-shadow: 0 8px 24px rgba(0,0,0,.5);
+}
+
+.dark .shadow-spotify-hover {
+  box-shadow: 0 16px 48px rgba(0,0,0,.7);
+}
+
+/* Table Styles - Spotify Theme */
+.dark table {
+  border-color: var(--spotify-light-gray);
+  background-color: var(--spotify-medium-gray);
+}
+
+.dark th {
+  background-color: var(--spotify-light-gray);
+  color: var(--spotify-text-white);
+  border-color: var(--spotify-lighter-gray);
+}
+
+.dark td {
+  border-color: var(--spotify-lighter-gray);
+  color: var(--spotify-text-light);
+}
+
+.dark tr:nth-child(even) {
+  background-color: rgba(40, 40, 40, 0.3);
+}
+
+.dark tr:hover {
+  background-color: var(--spotify-light-gray);
+}
+
+/* Code Blocks - Spotify Style */
+.dark pre,
+.dark code {
+  background-color: var(--spotify-light-gray);
+  color: var(--spotify-text-white);
+  border-color: var(--spotify-lighter-gray);
+}
+
+/* Tooltips - Spotify Style */
+.dark [data-tooltip]::after {
+  background-color: var(--spotify-lighter-gray);
+  color: var(--spotify-text-white);
+  border-color: var(--spotify-light-gray);
+}
+
+/* Modal Backgrounds - Enhanced */
+.dark .modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.dark .modal-content {
+  background-color: var(--spotify-medium-gray);
+  border-color: var(--spotify-lighter-gray);
+}
+
+/* Navigation and Sidebar - Black Frames */
+.dark nav,
+.dark .sidebar,
+.dark .navigation {
+  background-color: var(--spotify-black);
+  border-color: var(--spotify-lighter-gray);
+}
+
+/* Cards and Panels - Medium Gray Content Areas */
+.dark .card,
+.dark .panel {
+  background-color: var(--spotify-medium-gray);
+  border-color: var(--spotify-lighter-gray);
+}
+
+/* Interactive Elements - Light Gray for Hover */
+.dark .interactive:hover,
+.dark .clickable:hover {
+  background-color: var(--spotify-light-gray);
+}
+
+/* Elevated Elements - Lighter Gray for Depth */
+.dark .elevated,
+.dark .dropdown,
+.dark .popup {
+  background-color: var(--spotify-lighter-gray);
+}
+
+/* ===== COMPREHENSIVE UI COMPONENT OVERRIDES ===== */
+
+/* Layout Components */
+.dark .sidebar,
+.dark .navigation,
+.dark nav {
+  background-color: var(--spotify-black) !important;
+}
+
+.dark .main-content,
+.dark main {
+  background-color: var(--spotify-dark-gray) !important;
+}
+
+/* Card Components - All Variants */
+.dark .card,
+.dark .panel,
+.dark .widget,
+.dark .container {
+  background-color: var(--spotify-medium-gray) !important;
+  border-color: var(--spotify-lighter-gray) !important;
+}
+
+/* Modal and Dialog Components */
+.dark .modal,
+.dark .dialog,
+.dark .overlay {
+  background-color: var(--spotify-medium-gray) !important;
+  border-color: var(--spotify-lighter-gray) !important;
+}
+
+.dark .modal-backdrop,
+.dark .overlay-backdrop {
+  background-color: rgba(0, 0, 0, 0.8) !important;
+}
+
+/* Form Components */
+.dark input[type="text"],
+.dark input[type="email"],
+.dark input[type="password"],
+.dark input[type="number"],
+.dark input[type="tel"],
+.dark input[type="url"],
+.dark input[type="search"],
+.dark textarea,
+.dark select {
+  background-color: var(--spotify-lighter-gray) !important;
+  border-color: var(--spotify-lighter-gray) !important;
+  color: var(--spotify-text-white) !important;
+}
+
+.dark input:focus,
+.dark textarea:focus,
+.dark select:focus {
+  border-color: var(--spotify-green) !important;
+  box-shadow: 0 0 0 2px rgba(29, 185, 84, 0.3) !important;
+  outline: none !important;
+}
+
+/* Button Components */
+.dark .btn,
+.dark button {
+  transition: all 0.2s ease;
+}
+
+.dark .btn-primary,
+.dark .button-primary {
+  background-color: var(--spotify-green) !important;
+  color: var(--spotify-black) !important;
+  border-color: var(--spotify-green) !important;
+}
+
+.dark .btn-primary:hover,
+.dark .button-primary:hover {
+  background-color: var(--spotify-green-hover) !important;
+  transform: scale(1.02);
+}
+
+.dark .btn-secondary,
+.dark .button-secondary {
+  background-color: var(--spotify-lighter-gray) !important;
+  color: var(--spotify-text-white) !important;
+  border-color: var(--spotify-lighter-gray) !important;
+}
+
+.dark .btn-secondary:hover,
+.dark .button-secondary:hover {
+  background-color: var(--spotify-light-gray) !important;
+}
+
+/* List Components */
+.dark .list,
+.dark .menu,
+.dark ul,
+.dark ol {
+  background-color: var(--spotify-medium-gray) !important;
+}
+
+.dark .list-item,
+.dark .menu-item,
+.dark li {
+  border-color: var(--spotify-lighter-gray) !important;
+}
+
+.dark .list-item:hover,
+.dark .menu-item:hover {
+  background-color: var(--spotify-light-gray) !important;
+}
+
+/* Table Components */
+.dark .table,
+.dark table {
+  background-color: var(--spotify-medium-gray) !important;
+  border-color: var(--spotify-lighter-gray) !important;
+}
+
+.dark .table-header,
+.dark thead,
+.dark th {
+  background-color: var(--spotify-light-gray) !important;
+  color: var(--spotify-text-white) !important;
+  border-color: var(--spotify-lighter-gray) !important;
+}
+
+.dark .table-row,
+.dark tbody tr,
+.dark td {
+  border-color: var(--spotify-lighter-gray) !important;
+  color: var(--spotify-text-light) !important;
+}
+
+.dark .table-row:hover,
+.dark tbody tr:hover {
+  background-color: var(--spotify-light-gray) !important;
+}
+
+.dark .table-row:nth-child(even),
+.dark tbody tr:nth-child(even) {
+  background-color: rgba(40, 40, 40, 0.3) !important;
+}
+
+/* Background Patterns - Spotify Style */
+.dark .bg-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+.dark .bg-pattern-personal {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231db954' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+.dark .bg-pattern-medical {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231db954' fill-opacity='0.08'%3E%3Cpath d='M30 30h30v30H30V30zm0-30h30v30H30V0zM0 30h30v30H0V30zM0 0h30v30H0V0z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+.dark .bg-pattern-security {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231db954' fill-opacity='0.06'%3E%3Cpath d='M0 0h30v30H0V0zm30 30h30v30H30V30z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Toggle Switch - Spotify Style */
+.dark .dot {
+  background-color: var(--spotify-text-white);
+}
+
+/* Progress Bars - Spotify Style */
+.dark .progress-bar {
+  background-color: var(--spotify-light-gray);
+}
+
+.dark .progress-bar-fill {
+  background-color: var(--spotify-green);
+}
+
+/* Badges - Spotify Style */
+.dark .badge {
+  background-color: var(--spotify-light-gray);
+  color: var(--spotify-text-white);
+}
+
+.dark .badge-primary {
+  background-color: var(--spotify-green);
+  color: var(--spotify-black);
+}
+
+.dark .badge-success {
+  background-color: var(--spotify-green);
+  color: var(--spotify-black);
+}
+
+.dark .badge-danger {
+  background-color: #e53e3e;
+  color: var(--spotify-text-white);
+}
+
+.dark .badge-warning {
+  background-color: #ed8936;
+  color: var(--spotify-black);
+}
+
+/* Tabs - Spotify Style */
+.dark .tab {
+  background-color: var(--spotify-light-gray);
+  color: var(--spotify-text-muted);
+  border-color: var(--spotify-lighter-gray);
+}
+
+.dark .tab-active {
+  background-color: var(--spotify-green);
+  color: var(--spotify-black);
+}
+
+.dark .tab-panel {
+  background-color: var(--spotify-medium-gray);
+  border-color: var(--spotify-lighter-gray);
+}
+
+/* Accordions - Spotify Style */
+.dark .accordion {
+  background-color: var(--spotify-light-gray);
+  border-color: var(--spotify-lighter-gray);
+}
+
+.dark .accordion-header {
+  background-color: var(--spotify-medium-gray);
+  color: var(--spotify-text-white);
+}
+
+.dark .accordion-content {
+  background-color: var(--spotify-light-gray);
+  color: var(--spotify-text-light);
+}
+
+/* Charts and Graphs - Spotify Style */
+.dark .recharts-cartesian-grid-horizontal line,
+.dark .recharts-cartesian-grid-vertical line {
+  stroke: var(--spotify-lighter-gray);
+}
+
+.dark .recharts-text {
+  fill: var(--spotify-text-light);
+}
+
+.dark .recharts-legend-item-text {
+  color: var(--spotify-text-light) !important;
+}
+
+.dark .recharts-tooltip-wrapper {
+  background-color: var(--spotify-light-gray) !important;
+  border-color: var(--spotify-lighter-gray) !important;
+  color: var(--spotify-text-white) !important;
+}
+
+/* Calendar Components - Spotify Style */
+.dark .react-datepicker {
+  background-color: var(--spotify-light-gray);
+  border-color: var(--spotify-lighter-gray);
+}
+
+.dark .react-datepicker__header {
+  background-color: var(--spotify-medium-gray);
+  border-color: var(--spotify-lighter-gray);
+}
+
+.dark .react-datepicker__day-name,
+.dark .react-datepicker__day,
+.dark .react-datepicker__time-name {
+  color: var(--spotify-text-light);
+}
+
+.dark .react-datepicker__day:hover {
+  background-color: var(--spotify-lighter-gray);
+}
+
+.dark .react-datepicker__day--selected {
+  background-color: var(--spotify-green);
+  color: var(--spotify-black);
+}
+
+/* Notifications - Spotify Style */
+.dark .notification {
+  background-color: var(--spotify-light-gray);
+  border-color: var(--spotify-lighter-gray);
+  color: var(--spotify-text-white);
+}
+
+.dark .notification-success {
+  background-color: rgba(29, 185, 84, 0.2);
+  border-color: var(--spotify-green);
+}
+
+.dark .notification-error {
+  background-color: rgba(229, 62, 62, 0.2);
+  border-color: #e53e3e;
+}
+
+.dark .notification-warning {
+  background-color: rgba(237, 137, 54, 0.2);
+  border-color: #ed8936;
+}
+
+.dark .notification-info {
+  background-color: rgba(29, 185, 84, 0.2);
+  border-color: var(--spotify-green);
+}
+
+/* Dark mode notifications */
+.dark .notification {
+  background-color: #2d3748;
+  border-color: #4a5568;
+  color: #e2e8f0;
+}
+
+.dark .notification-success {
+  background-color: rgba(56, 161, 105, 0.2);
+  border-color: #38a169;
+}
+
+.dark .notification-error {
+  background-color: rgba(229, 62, 62, 0.2);
+  border-color: #e53e3e;
+}
+
+.dark .notification-warning {
+  background-color: rgba(237, 137, 54, 0.2);
+  border-color: #ed8936;
+}
+
+.dark .notification-info {
+  background-color: rgba(66, 153, 225, 0.2);
+  border-color: #4299e1;
+}
+
+/* ===== SPECIALIZED CAREAI COMPONENTS ===== */
+
+/* Medical Chatbot Interface - Spotify Style */
+.dark .chat-container {
+  background-color: var(--spotify-black);
+  border-color: var(--spotify-lighter-gray);
+  border-radius: 8px;
+}
+
+.dark .chat-header {
+  background-color: var(--spotify-medium-gray);
+  border-bottom: 1px solid var(--spotify-lighter-gray);
+  color: var(--spotify-text-white);
+}
+
+.dark .chat-message-user {
+  background-color: var(--spotify-green);
+  color: var(--spotify-black);
+  border-radius: 16px 16px 0 16px;
+  font-weight: 500;
+}
+
+.dark .chat-message-bot {
+  background-color: var(--spotify-lighter-gray);
+  color: var(--spotify-text-white);
+  border-radius: 16px 16px 16px 0;
+}
+
+.dark .chat-input {
+  background-color: var(--spotify-lighter-gray);
+  border: none;
+  border-radius: 500px;
+  color: var(--spotify-text-white);
+  padding: 12px 16px;
+}
+
+.dark .chat-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(29, 185, 84, 0.3);
+}
+
+/* Health Analytics Dashboard - Spotify Style */
+.dark .dashboard-container {
+  background-color: var(--spotify-black);
+}
+
+.dark .dashboard-card {
+  background-color: var(--spotify-medium-gray);
+  border-radius: 8px;
+  border: 1px solid var(--spotify-lighter-gray);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.dark .dashboard-card:hover {
+  background-color: var(--spotify-light-gray);
+  transform: translateY(-2px);
+}
+
+.dark .metric-value {
+  color: var(--spotify-text-white);
+  font-weight: 700;
+}
+
+.dark .metric-label {
+  color: var(--spotify-text-light);
+}
+
+/* Appointment Booking System - Spotify Style */
+.dark .appointment-card {
+  background-color: var(--spotify-medium-gray);
+  border-radius: 8px;
+  border: 1px solid var(--spotify-lighter-gray);
+}
+
+.dark .appointment-card:hover {
+  background-color: var(--spotify-light-gray);
+}
+
+.dark .appointment-status-confirmed {
+  background-color: rgba(29, 185, 84, 0.2);
+  color: var(--spotify-green);
+  border: 1px solid var(--spotify-green);
+}
+
+.dark .appointment-status-pending {
+  background-color: rgba(237, 137, 54, 0.2);
+  color: #ed8936;
+  border: 1px solid #ed8936;
+}
+
+.dark .appointment-status-cancelled {
+  background-color: rgba(229, 62, 62, 0.2);
+  color: #e53e3e;
+  border: 1px solid #e53e3e;
+}
+
+/* Social Feed Components - Spotify Style */
+.dark .social-feed-container {
+  background-color: var(--spotify-black);
+}
+
+.dark .social-post {
+  background-color: var(--spotify-medium-gray);
+  border-radius: 8px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  transition: background-color 0.3s ease;
+}
+
+.dark .social-post:hover {
+  background-color: var(--spotify-light-gray);
+}
+
+.dark .social-post-header {
+  padding: 16px;
+  border-bottom: 1px solid var(--spotify-lighter-gray);
+}
+
+.dark .social-post-content {
+  padding: 16px;
+  color: var(--spotify-text-light);
+}
+
+.dark .social-post-actions {
+  padding: 12px 16px;
+  border-top: 1px solid var(--spotify-lighter-gray);
+  display: flex;
+  justify-content: space-between;
+}
+
+.dark .social-action-button {
+  background: transparent;
+  color: var(--spotify-text-light);
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s ease;
+}
+
+.dark .social-action-button:hover {
+  color: var(--spotify-text-white);
+}
+
+.dark .social-action-button.active {
+  color: var(--spotify-green);
+}
+
+.dark .social-input {
+  background-color: var(--spotify-lighter-gray);
+  border: none;
+  border-radius: 500px;
+  padding: 12px 16px;
+  color: var(--spotify-text-white);
+  width: 100%;
+}
+
+.dark .social-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(29, 185, 84, 0.3);
+}
+
+/* Prediction Results Display - Spotify Style */
+.dark .prediction-container {
+  background-color: var(--spotify-medium-gray);
+  border-radius: 8px;
+  border: 1px solid var(--spotify-lighter-gray);
+}
+
+.dark .prediction-result {
+  background-color: var(--spotify-light-gray);
+  border-radius: 6px;
+  padding: 16px;
+  margin: 8px 0;
+}
+
+.dark .prediction-confidence {
+  color: var(--spotify-green);
+  font-weight: 600;
+}
+
+.dark .prediction-low-risk {
+  border-left: 4px solid var(--spotify-green);
+}
+
+.dark .prediction-medium-risk {
+  border-left: 4px solid #ed8936;
+}
+
+.dark .prediction-high-risk {
+  border-left: 4px solid #e53e3e;
+}
+
+/* Settings Panels - Spotify Style */
+.dark .settings-container {
+  background-color: var(--spotify-black);
+}
+
+.dark .settings-section {
+  background-color: var(--spotify-medium-gray);
+  border-radius: 8px;
+  border: 1px solid var(--spotify-lighter-gray);
+  margin-bottom: 16px;
+}
+
+.dark .settings-header {
+  background-color: var(--spotify-light-gray);
+  padding: 16px;
+  border-bottom: 1px solid var(--spotify-lighter-gray);
+  color: var(--spotify-text-white);
+  font-weight: 600;
+}
+
+.dark .settings-item {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--spotify-lighter-gray);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dark .settings-item:last-child {
+  border-bottom: none;
+}
+
+.dark .settings-toggle {
+  background-color: var(--spotify-lighter-gray);
+  border-radius: 12px;
+  position: relative;
+  width: 44px;
+  height: 24px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.dark .settings-toggle.active {
+  background-color: var(--spotify-green);
+}
+
+/* Payment Forms - Spotify Style */
+.dark .payment-form {
+  background-color: var(--spotify-medium-gray);
+  border-radius: 8px;
+  border: 1px solid var(--spotify-lighter-gray);
+  padding: 24px;
+}
+
+.dark .payment-input {
+  background-color: var(--spotify-lighter-gray);
+  border: 1px solid var(--spotify-lighter-gray);
+  border-radius: 4px;
+  color: var(--spotify-text-white);
+  padding: 12px;
+  width: 100%;
+}
+
+.dark .payment-input:focus {
+  border-color: var(--spotify-green);
+  box-shadow: 0 0 0 2px rgba(29, 185, 84, 0.3);
+  outline: none;
+}
+
+.dark .payment-button {
+  background-color: var(--spotify-green);
+  color: var(--spotify-black);
+  border: none;
+  border-radius: 500px;
+  padding: 12px 24px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dark .payment-button:hover {
+  background-color: var(--spotify-green-hover);
+  transform: scale(1.04);
+}
+
+/* Medical Facilities - Spotify Style */
+.dark .facility-card {
+  background-color: var(--spotify-medium-gray);
+  border-radius: 8px;
+  border: 1px solid var(--spotify-lighter-gray);
+  transition: all 0.3s ease;
+}
+
+.dark .facility-card:hover {
+  background-color: var(--spotify-light-gray);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,.5);
+}
+
+.dark .facility-rating {
+  color: var(--spotify-green);
+  font-weight: 600;
+}
+
+/* Games Components - Spotify Style */
+.dark .game-container {
+  background-color: var(--spotify-medium-gray);
+  border-radius: 8px;
+  border: 1px solid var(--spotify-lighter-gray);
+}
+
+.dark .game-board {
+  background-color: var(--spotify-light-gray);
+  border-radius: 6px;
+}
+
+.dark .game-piece {
+  background-color: var(--spotify-lighter-gray);
+  border: 1px solid var(--spotify-light-gray);
+  transition: all 0.2s ease;
+}
+
+.dark .game-piece:hover {
+  background-color: var(--spotify-green);
+  transform: scale(1.05);
+}
+
+/* Responsive Design - Mobile Adaptations */
+@media (max-width: 768px) {
+  .dark .card-hover:hover {
+    transform: none; /* Disable hover transforms on mobile */
+  }
+
+  .dark .social-post {
+    margin-bottom: 12px;
+  }
+
+  .dark .chat-container {
+    border-radius: 0; /* Full width on mobile */
+  }
+}
+
+/* High Contrast Mode Support */
+.dark.high-contrast {
+  --spotify-text-light: #ffffff;
+  --spotify-text-muted: #e0e0e0;
+}
+
+.dark.high-contrast .border-gray-200,
+.dark.high-contrast .border-gray-300,
+.dark.high-contrast .border-gray-700 {
+  border-color: #ffffff;
+}
+
+/* ===== COMPREHENSIVE TAILWIND CLASS OVERRIDES ===== */
+
+/* All possible background color classes */
+.dark .bg-white,
+.dark .bg-slate-50,
+.dark .bg-slate-100,
+.dark .bg-slate-200,
+.dark .bg-neutral-50,
+.dark .bg-neutral-100,
+.dark .bg-neutral-200,
+.dark .bg-stone-50,
+.dark .bg-stone-100,
+.dark .bg-stone-200 {
+  background-color: var(--spotify-medium-gray) !important;
+}
+
+/* Gradient overrides for dark mode */
+.dark .from-blue-50,
+.dark .from-blue-100,
+.dark .from-indigo-50,
+.dark .from-indigo-100,
+.dark .from-purple-50,
+.dark .from-purple-100 {
+  --tw-gradient-from: var(--spotify-medium-gray) !important;
+}
+
+.dark .to-blue-50,
+.dark .to-blue-100,
+.dark .to-indigo-50,
+.dark .to-indigo-100,
+.dark .to-purple-50,
+.dark .to-purple-100 {
+  --tw-gradient-to: var(--spotify-light-gray) !important;
+}
+
+/* Hero sections and feature cards */
+.dark .bg-gradient-to-r,
+.dark .bg-gradient-to-l,
+.dark .bg-gradient-to-t,
+.dark .bg-gradient-to-b {
+  background: linear-gradient(135deg, var(--spotify-medium-gray) 0%, var(--spotify-light-gray) 100%) !important;
+}
+
+/* Specific component overrides */
+.dark .bg-amber-100 {
+  background-color: rgba(29, 185, 84, 0.1) !important;
+}
+
+.dark .bg-amber-900\/30 {
+  background-color: rgba(29, 185, 84, 0.15) !important;
+}
+
+.dark .bg-indigo-100 {
+  background-color: rgba(29, 185, 84, 0.1) !important;
+}
+
+.dark .bg-indigo-900\/30 {
+  background-color: rgba(29, 185, 84, 0.15) !important;
+}
+
+.dark .bg-green-100 {
+  background-color: rgba(29, 185, 84, 0.1) !important;
+}
+
+.dark .bg-green-900\/30 {
+  background-color: rgba(29, 185, 84, 0.15) !important;
+}
+
+.dark .bg-red-100 {
+  background-color: rgba(229, 62, 62, 0.1) !important;
+}
+
+.dark .bg-red-900\/30 {
+  background-color: rgba(229, 62, 62, 0.15) !important;
+}
+
+/* Text color overrides for colored backgrounds */
+.dark .text-amber-800,
+.dark .text-amber-700 {
+  color: var(--spotify-green) !important;
+}
+
+.dark .text-amber-200,
+.dark .text-amber-300 {
+  color: var(--spotify-text-white) !important;
+}
+
+.dark .text-indigo-800,
+.dark .text-indigo-700 {
+  color: var(--spotify-green) !important;
+}
+
+.dark .text-indigo-200,
+.dark .text-indigo-300 {
+  color: var(--spotify-text-white) !important;
+}
+
+.dark .text-green-800,
+.dark .text-green-700 {
+  color: var(--spotify-green) !important;
+}
+
+.dark .text-green-200,
+.dark .text-green-300 {
+  color: var(--spotify-text-white) !important;
+}
+
+/* Border color overrides for colored components */
+.dark .border-blue-100,
+.dark .border-blue-200 {
+  border-color: var(--spotify-lighter-gray) !important;
+}
+
+.dark .border-blue-800,
+.dark .border-blue-900 {
+  border-color: var(--spotify-green) !important;
+}
+
+.dark .border-indigo-100,
+.dark .border-indigo-200 {
+  border-color: var(--spotify-lighter-gray) !important;
+}
+
+.dark .border-indigo-800,
+.dark .border-indigo-900 {
+  border-color: var(--spotify-green) !important;
+}
+
+/* Loading and skeleton states */
+.dark .animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.dark .bg-gray-50.animate-pulse,
+.dark .bg-gray-100.animate-pulse,
+.dark .bg-gray-200.animate-pulse {
+  background-color: var(--spotify-light-gray) !important;
+}
+
+.dark .bg-gray-600.animate-pulse,
+.dark .bg-gray-700.animate-pulse {
+  background-color: var(--spotify-lighter-gray) !important;
+}
+
+/* ===== FINAL COMPREHENSIVE OVERRIDES ===== */
+
+/* Ensure all divs and containers get proper styling */
+.dark div[class*="bg-white"],
+.dark div[class*="bg-gray"],
+.dark section[class*="bg-white"],
+.dark section[class*="bg-gray"],
+.dark article[class*="bg-white"],
+.dark article[class*="bg-gray"] {
+  background-color: var(--spotify-medium-gray) !important;
+  border-color: var(--spotify-lighter-gray) !important;
+}
+
+/* Ensure all text gets proper colors */
+.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+  color: var(--spotify-text-white) !important;
+}
+
+.dark p, .dark span, .dark div {
+  color: inherit;
+}
+
+/* Ensure all links get proper colors */
+.dark a {
+  color: var(--spotify-green);
+}
+
+.dark a:hover {
+  color: var(--spotify-green-hover);
+}
+
+/* Ensure all buttons get proper styling */
+.dark button:not([class*="bg-"]) {
+  background-color: var(--spotify-lighter-gray);
+  color: var(--spotify-text-white);
+  border-color: var(--spotify-lighter-gray);
+}
+
+.dark button:not([class*="bg-"]):hover {
+  background-color: var(--spotify-light-gray);
+}
+
+/* Ensure all form elements get proper styling */
+.dark input:not([type="checkbox"]):not([type="radio"]),
+.dark textarea,
+.dark select {
+  background-color: var(--spotify-lighter-gray) !important;
+  border-color: var(--spotify-lighter-gray) !important;
+  color: var(--spotify-text-white) !important;
+}
+
+/* Ensure proper focus states */
+.dark *:focus-visible {
+  outline: 2px solid var(--spotify-green);
+  outline-offset: 2px;
+}
+
+/* Ensure proper hover states for interactive elements */
+.dark [role="button"]:hover,
+.dark .cursor-pointer:hover {
+  background-color: var(--spotify-light-gray) !important;
+}
+
+/* Print Styles for Dark Mode */
+@media print {
+  .dark {
+    background-color: white !important;
+    color: black !important;
+  }
+
+  .dark * {
+    background-color: white !important;
+    color: black !important;
+    border-color: black !important;
+  }
+}

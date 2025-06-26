@@ -1,0 +1,8 @@
+[
+  {
+    "origin": ["http://localhost:3000", "http://localhost:3001", "http://localhost:3002", "http://localhost:3003", "http://localhost:3004", "http://localhost:3005", "https://careaiproto.web.app", "https://careaiproto.firebaseapp.com"],
+    "method": ["GET", "PUT", "POST", "DELETE", "HEAD"],
+    "maxAgeSeconds": 3600,
+    "responseHeader": ["Content-Type", "Content-Length", "Content-Encoding", "Content-Disposition", "Authorization", "X-Requested-With", "Accept"]
+  }
+]
