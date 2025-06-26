@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8003';
+const API_BASE_URL = import.meta.env.VITE_ML_BACKEND_URL || 'http://localhost:8003';
 
 export const apiClient = {
   async get(endpoint: string) {

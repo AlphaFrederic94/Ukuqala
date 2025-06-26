@@ -58,7 +58,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Try to connect to the chatbot backend
     try {
-      const response = await fetch('http://localhost:8003/api/chatbot/chat', {
+      const ML_BACKEND_URL = process.env.VITE_ML_BACKEND_URL || 'http://localhost:8003';
+      const response = await fetch(`${ML_BACKEND_URL}/api/chatbot/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

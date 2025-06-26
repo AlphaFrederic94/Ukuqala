@@ -68,7 +68,7 @@ export interface UploadedFile {
 }
 
 // Configuration
-const GEMINI_PROXY_URL = 'http://localhost:3001';
+const GEMINI_PROXY_URL = import.meta.env.VITE_GEMINI_PROXY_URL || 'http://localhost:3001';
 
 class ChatbotService {
   private sessionId: string | null = null;

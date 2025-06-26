@@ -7,7 +7,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     // Try to connect to the chatbot backend
-    const response = await fetch('http://localhost:3001/api/chatbot/status', {
+    const GEMINI_PROXY_URL = process.env.VITE_GEMINI_PROXY_URL || 'http://localhost:3001';
+    const response = await fetch(`${GEMINI_PROXY_URL}/api/chatbot/status`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
