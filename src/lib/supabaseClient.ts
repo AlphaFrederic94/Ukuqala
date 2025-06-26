@@ -43,7 +43,9 @@ export const supabase = createClient(cleanSupabaseUrl, supabaseAnonKey, {
         }
       },
     },
-    redirectTo: window.location.origin + '/auth/callback'
+    redirectTo: import.meta.env.VITE_ENVIRONMENT === 'production'
+      ? 'https://ukuqala-careai.onrender.com/auth/callback'
+      : window.location.origin + '/auth/callback'
   },
   global: {
     headers: {

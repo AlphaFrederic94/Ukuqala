@@ -27,6 +27,7 @@ const NewLoginForm = React.lazy(() => import('./components/auth/NewLoginForm'));
 const NewRegisterForm = React.lazy(() => import('./components/auth/NewRegisterForm'));
 const ForgotPassword = React.lazy(() => import('./components/auth/ForgotPassword'));
 const ResetPassword = React.lazy(() => import('./pages/ResetPassword'));
+const AuthCallback = React.lazy(() => import('./components/auth/AuthCallback'));
 
 // Lazy load pages
 const Home = React.lazy(() => import('./pages/Home'));
@@ -179,7 +180,11 @@ function AppContent() {
           <ResetPassword />
         </Suspense>
       } />
-      <Route path="/auth/callback" element={<LoginForm />} />
+      <Route path="/auth/callback" element={
+        <Suspense fallback={<LoadingSpinner />}>
+          <AuthCallback />
+        </Suspense>
+      } />
 
       {/* Onboarding route - protected but outside main layout */}
       <Route

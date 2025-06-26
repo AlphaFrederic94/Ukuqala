@@ -148,10 +148,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
     },
     signInWithGoogle: async () => {
+      const redirectUrl = import.meta.env.VITE_ENVIRONMENT === 'production'
+        ? 'https://ukuqala-careai.onrender.com/auth/callback'
+        : window.location.origin + '/auth/callback';
+
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: window.location.origin + '/auth/callback',
+          redirectTo: redirectUrl,
         },
       });
       if (error) throw error;
